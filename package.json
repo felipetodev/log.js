@@ -1,5 +1,5 @@
 {
-  "name": "runjs-web",
+  "name": "lab.js",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -15,13 +15,17 @@
     "@remix-run/react": "^2.12.1",
     "@remix-run/serve": "^2.12.1",
     "isbot": "^4.1.0",
+    "just-debounce-it": "^3.2.0",
+    "monaco-editor": "^0.52.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-syntax-highlighter": "^15.5.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.12.1",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "autoprefixer": "^10.4.19",
