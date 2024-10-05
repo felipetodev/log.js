@@ -136,7 +136,7 @@ export default function Playground() {
     <div className="relative h-screen w-screen">
       <div className="grid grid-cols-2 flex-col h-[calc(100%-24px)] bg-[#282A36]">
         <div ref={editorRef} className="size-full" />
-        <div className="w-full overflow-auto pb-40">
+        <div className="w-full overflow-auto h-full">
           <SyntaxHighlighter
             PreTag="div"
             codeTagProps={{
@@ -148,8 +148,9 @@ export default function Playground() {
             customStyle={{
               margin: 0,
               width: '100%',
+              height: '100%',
               background: 'transparent',
-              padding: '0rem 1rem'
+              padding: '0 0 10rem 0'
             }}
             language='javascript'
             showLineNumbers
