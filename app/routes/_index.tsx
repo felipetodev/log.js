@@ -43,12 +43,44 @@ const draculaTheme: editor.IStandaloneThemeData = {
 const defState = 'function sum(a, b) {\n  return a + b \n}\n\nconsole.log(sum(2, 2))\n'
 
 export default function Playground() {
-  const [code, setCode] = useState<string>(defState)
+  const [code, setCode] = useState<string>(() => {
+    if (typeof window === 'undefined') return defState
+    const savedCode = localStorage.getItem('code')
+    return savedCode ? JSON.parse(savedCode) : defState
+  })
   const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
   const [output, setOutput] = useState<string[]>([])
   const editorRef = useRef<HTMLDivElement>(null)
 
-  const debouncedSetOutput = debounce((value: string[]) => setOutput(value), 800)
+  const debouncedExecuteCode = useRef(
+    debounce((codeToExecute: string) => {
+      let outputBuffer: string[] = [];
+      const originalLog = console.log;
+      console.log = (...args) => {
+        const formattedArgs = args.map(arg => {
+          if (typeof arg === 'object' && arg !== null) {
+            return JSON.stringify(arg, null, 2);
+          }
+          return String(arg);
+        });
+        outputBuffer.push(formattedArgs.join(' '));
+      };
+
+      try {
+        const func = new Function(codeToExecute);
+        func();
+      } catch (error) {
+        if (error instanceof Error) {
+          outputBuffer = [`Error: ${error.message}`];
+        } else {
+          outputBuffer = ['An unknown error occurred'];
+        }
+      }
+
+      console.log = originalLog;
+      setOutput(outputBuffer);
+    }, 1000)
+  ).current;
 
   useEffect(() => {
     window.MonacoEnvironment = {
@@ -90,43 +122,15 @@ export default function Playground() {
   }, []);
 
   editor?.onDidChangeModelContent(() => {
-    // if (editor?.getValue() === '') {
-    //   setOutput([])
-    // }
-    setCode(editor?.getValue() || '')
+    // should be in a useEffect (?)
+    const newCode = editor.getValue() || '';
+    localStorage.setItem('code', JSON.stringify(newCode));
+    setCode(newCode);
   })
 
   useEffect(() => {
-    let outputBuffer: string[] = [];
-
-    const originalLog = console.log;
-    console.log = (...args) => {
-      const formattedArgs = args.map(arg => {
-        if (typeof arg === 'object' && arg !== null) {
-          return JSON.stringify(arg, null, 2);
-        }
-        return String(arg);
-      });
-      outputBuffer.push(formattedArgs.join(' ')); formattedArgs.join(' ')
-      debouncedSetOutput(outputBuffer);
-    };
-
-    try {
-      // Use Function constructor to create a function from the code string
-      const func = new Function(code);
-      func();
-    } catch (error) {
-      if (error instanceof Error) {
-        outputBuffer = [`Error: ${error.message}`];
-      } else {
-        outputBuffer = ['An unknown error occurred'];
-      }
-      debouncedSetOutput(outputBuffer);
-    }
-
-    // Restore original console.log
-    console.log = originalLog;
-  }, [code, debouncedSetOutput]);
+    debouncedExecuteCode(code);
+  }, [code]);
 
   return (
     <div className="relative h-screen w-screen">
