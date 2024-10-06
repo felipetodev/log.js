@@ -3,8 +3,6 @@ import type { MetaFunction } from "@remix-run/node";
 import { editor } from "monaco-editor";
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import debounce from "just-debounce-it";
 
 export const meta: MetaFunction = () => {
@@ -48,9 +46,11 @@ export default function Playground() {
     const savedCode = localStorage.getItem('code')
     return savedCode ? JSON.parse(savedCode) : defState
   })
-  const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
-  const [output, setOutput] = useState<string[]>([])
-  const editorRef = useRef<HTMLDivElement>(null)
+  const [inputEditor, setInputEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
+  const [outputEditor, setOutputEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
+  const [output, setOutput] = useState<string>('')
+  const inputEditorRef = useRef<HTMLDivElement>(null)
+  const outputEditorRef = useRef<HTMLDivElement>(null)
 
   const debouncedExecuteCode = useRef(
     debounce((codeToExecute: string) => {
@@ -60,6 +60,9 @@ export default function Playground() {
         const formattedArgs = args.map(arg => {
           if (typeof arg === 'object' && arg !== null) {
             return JSON.stringify(arg, null, 2);
+          }
+          if (typeof arg === 'string') {
+            return `"${arg}"`;
           }
           return String(arg);
         });
@@ -78,8 +81,8 @@ export default function Playground() {
       }
 
       console.log = originalLog;
-      setOutput(outputBuffer);
-    }, 1000)
+      setOutput(outputBuffer.join('\n'));
+    }, 600)
   ).current;
 
   useEffect(() => {
@@ -94,10 +97,10 @@ export default function Playground() {
   }, [])
 
   useEffect(() => {
-    if (editorRef.current && !editor) {
+    if (inputEditorRef.current && !inputEditor) {
       import('monaco-editor').then((monaco) => {
         monaco.editor.defineTheme('dracula', draculaTheme);
-        const newEditor = monaco.editor.create(editorRef.current!, {
+        const newEditor = monaco.editor.create(inputEditorRef.current!, {
           value: code,
           language: 'javascript',
           theme: 'dracula',
@@ -110,55 +113,64 @@ export default function Playground() {
           }
         });
 
-        setEditor(newEditor);
+        setInputEditor(newEditor);
+      });
+    }
+
+    if (outputEditorRef.current && !outputEditor) {
+      import('monaco-editor').then((monaco) => {
+        const outputEditor = monaco.editor.create(outputEditorRef.current!, {
+          value: '',
+          language: 'javascript',
+          theme: 'dracula',
+          tabSize: 2,
+          fontSize: 16,
+          readOnly: true,
+          automaticLayout: true,
+          minimap: {
+            enabled: false
+          }
+        });
+
+        setOutputEditor(outputEditor);
       });
     }
 
     return () => {
-      if (editor) {
-        editor.dispose();
+      if (inputEditor) {
+        inputEditor.dispose();
+      }
+      if (outputEditor) {
+        outputEditor.dispose();
       }
     };
   }, []);
 
-  editor?.onDidChangeModelContent(() => {
-    // should be in a useEffect (?)
-    const newCode = editor.getValue() || '';
-    localStorage.setItem('code', JSON.stringify(newCode));
-    setCode(newCode);
-  })
+  useEffect(() => {
+    if (inputEditor) {
+      inputEditor.onDidChangeModelContent(() => {
+        const newCode = inputEditor.getValue() || '';
+        localStorage.setItem('code', JSON.stringify(newCode));
+        setCode(newCode);
+      });
+    }
+  }, [inputEditor]);
 
   useEffect(() => {
     debouncedExecuteCode(code);
   }, [code]);
 
+  useEffect(() => {
+    if (outputEditor) {
+      outputEditor.setValue(output);
+    }
+  }, [output, outputEditor]);
+
   return (
     <div className="relative h-screen w-screen">
       <div className="grid grid-cols-2 flex-col h-[calc(100%-24px)] bg-[#282A36]">
-        <div ref={editorRef} className="size-full" />
-        <div className="w-full overflow-auto h-full">
-          <SyntaxHighlighter
-            PreTag="div"
-            codeTagProps={{
-              style: {
-                fontSize: 16,
-                fontFamily: 'var(--font-mono)'
-              }
-            }}
-            customStyle={{
-              margin: 0,
-              width: '100%',
-              height: '100%',
-              background: 'transparent',
-              padding: '0 0 10rem 0'
-            }}
-            language='javascript'
-            showLineNumbers
-            style={dracula}
-          >
-            {output.join('\n')}
-          </SyntaxHighlighter>
-        </div>
+        <div ref={inputEditorRef} className="size-full" />
+        <div ref={outputEditorRef} className="size-full" />
       </div>
       <div className="flex items-center justify-center w-full h-6 text-xs text-white bg-neutral-700 border-t border-neutral-800">
         <h4>
