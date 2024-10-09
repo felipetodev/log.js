@@ -12,7 +12,9 @@ interface TabsState {
   _hasHydrated: boolean;
   tabs: Tab[];
   activeTab: Tab;
+  language: 'typescript' | 'javascript';
   createNewTab: () => void;
+  setLanguage: (language: TabsState['language']) => void;
   setActiveTab: (tab: Tab) => void;
   setCode: (code: Tab['code']) => void;
   deleteTab: (id: Tab['id']) => void;
@@ -21,7 +23,7 @@ interface TabsState {
 const DEFAULT_TAB: Tab = {
   id: crypto.randomUUID(),
   name: 'Welcome 🎉',
-  code: 'function sum(a, b) {\n  return a + b \n}\n\nconsole.log(sum(2, 2))\n',
+  code: 'function sum(a: number, b: number) {\n  return a + b \n}\n\nconsole.log(sum(2, 2))\n',
   createdAt: new Date(),
 }
 
@@ -29,8 +31,11 @@ export const useTabsStore = create<TabsState>()(persist((set) => ({
   _hasHydrated: false,
   tabs: [DEFAULT_TAB],
   activeTab: DEFAULT_TAB,
+  language: 'typescript',
 
   setActiveTab: (tab: Tab) => set({ activeTab: tab }),
+
+  setLanguage: (language: TabsState['language']) => set({ language }),
 
   setCode: (code: Tab['code']) => set((state) => {
     const { tabs, activeTab } = state;

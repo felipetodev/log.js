@@ -4,6 +4,7 @@ import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
+import ts from 'typescript';
 
 // Dracula theme definition
 const draculaTheme: editor.IStandaloneThemeData = {
@@ -41,6 +42,7 @@ export function useMonacoEditor() {
   const activeTab = useTabsStore(state => state.activeTab)
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
   const setCode = useTabsStore(state => state.setCode)
+  const language = useTabsStore(state => state.language)
 
   useEffect(() => {
     window.MonacoEnvironment = {
@@ -54,12 +56,23 @@ export function useMonacoEditor() {
   }, [])
 
   useEffect(() => {
+    // change - update editor options
+    if (!inputEditor || !outputEditor) return;
+    import('monaco-editor').then((monaco) => {
+      const model = inputEditor.getModel();
+      if (model) {
+        monaco.editor.setModelLanguage(model, language);
+      }
+    });
+  }, [inputEditor, outputEditor, language]);
+
+  useEffect(() => {
     if (inputEditorRef.current && !inputEditor && hasHydratedStorage) {
       import('monaco-editor').then((monaco) => {
         monaco.editor.defineTheme('dracula', draculaTheme);
         const newEditor = monaco.editor.create(inputEditorRef.current!, {
           value: activeTab.code,
-          language: 'javascript',
+          language,
           theme: 'dracula',
           tabSize: 2,
           fontSize: 16,
@@ -78,7 +91,7 @@ export function useMonacoEditor() {
       import('monaco-editor').then((monaco) => {
         const outputEditor = monaco.editor.create(outputEditorRef.current!, {
           value: '',
-          language: 'javascript',
+          language,
           theme: 'dracula',
           tabSize: 2,
           fontSize: 16,
@@ -120,7 +133,16 @@ export function useMonacoEditor() {
       };
 
       try {
-        const func = new Function(codeToExecute);
+        // transpile TypeScript to JavaScript
+        const result = ts.transpileModule(codeToExecute, {
+          compilerOptions: {
+            module: ts.ModuleKind.CommonJS,
+            target: ts.ScriptTarget.ES5,
+          }
+        });
+
+        // execute the transpiled JavaScript
+        const func = new Function(result.outputText);
         func();
       } catch (error) {
         if (error instanceof Error) {
