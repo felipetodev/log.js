@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="flex items-center justify-center w-full h-6 text-xs text-white bg-neutral-700 border-t border-neutral-800">
+    <footer className="flex items-center justify-center w-full h-6 text-xs text-white bg-[#282A36]/70 border-t border-neutral-800">
       <h4>
         crafted by{" "}
         <a
