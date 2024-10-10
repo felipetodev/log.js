@@ -1,20 +1,17 @@
 import { Fragment } from "react/jsx-runtime";
 import { useMonacoEditor } from "~/hooks/use-monaco-editor";
+import { useTabs } from "~/hooks/use-tab";
 import { useTabsStore } from "~/store/tabs";
 
 export function Header() {
-  const { inputEditor } = useMonacoEditor();
+  const { isLoading, inputEditor } = useMonacoEditor();
+  const { tabs, activeTab, createNewTab, deleteTab, setActiveTab } = useTabs()
 
-  const tabs = useTabsStore(state => state.tabs);
-  const activeTab = useTabsStore(state => state.activeTab);
-  const setActiveTab = useTabsStore(state => state.setActiveTab);
-  const createNewTab = useTabsStore(state => state.createNewTab);
-  const deleteTab = useTabsStore(state => state.deleteTab);
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
 
   return (
     <div className="flex h-8 w-full bg-[#282A36]/70 border-b border-neutral-700">
-      {hasHydratedStorage &&
+      {hasHydratedStorage ?
         tabs?.map(tab => (
           <Fragment key={tab.id}>
             {tab.id === activeTab.id ? (
@@ -33,11 +30,12 @@ export function Header() {
               </div>
             ) : (
               <button
+                disabled={isLoading}
                 onClick={() => {
                   setActiveTab(tab);
                   inputEditor?.setValue(tab.code);
                 }}
-                className="flex items-center justify-between text-white bg-[#282A36] opacity-50 h-[calc(100%-2px)] px-4 w-40 rounded-t-lg mt-auto ml-0.5 hover:opacity-100 border-x border-t border-transparent hover:border-neutral-700 transition-colors transition-opacity"
+                className="flex items-center justify-between text-white bg-[#282A36] opacity-50 h-[calc(100%-2px)] px-4 w-40 rounded-t-lg mt-auto ml-0.5 hover:opacity-100 border-x border-t border-transparent hover:border-neutral-700 transition-all disabled:cursor-not-allowed"
               >
                 <span className="text-sm truncate">
                   {tab.name}
@@ -45,8 +43,15 @@ export function Header() {
               </button>
             )}
           </Fragment>
-        ))}
+        )) : (
+          <div className="flex items-center justify-between text-white opacity-50 bg-[#282A36] h-full pl-4 pr-1 w-40 rounded-t-lg mt-0.5 ml-0.5 border-x border-t border-neutral-700">
+            <span className="text-sm">
+              Loading...
+            </span>
+          </div>
+        )}
       <button
+        disabled={isLoading}
         onClick={createNewTab}
         className="px-1.5 text-white hover:bg-[#282A36] rounded-lg my-1 ml-0.5 transition-colors"
       >

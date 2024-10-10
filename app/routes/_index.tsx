@@ -12,10 +12,10 @@ export const meta: MetaFunction = () => {
 
 export default function App() {
   return (
-    <div className="relative h-screen w-screen">
+    <main className="relative h-screen w-screen">
       <Header />
       <Playground />
       <Footer />
-    </div>
+    </main>
   );
 }

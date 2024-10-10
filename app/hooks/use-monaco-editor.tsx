@@ -4,7 +4,8 @@ import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
-import ts from 'typescript';
+import { useTabs } from "./use-tab";
+import ts from "typescript";
 
 // Dracula theme definition
 const draculaTheme: editor.IStandaloneThemeData = {
@@ -33,16 +34,15 @@ const draculaTheme: editor.IStandaloneThemeData = {
 };
 
 export function useMonacoEditor() {
+  const { language, activeTab, setCode } = useTabs()
+  const [isLoading, setIsLoading] = useState(false)
   const [inputEditor, setInputEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
   const [outputEditor, setOutputEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
   const [output, setOutput] = useState<string>('')
   const inputEditorRef = useRef<HTMLDivElement>(null)
   const outputEditorRef = useRef<HTMLDivElement>(null)
 
-  const activeTab = useTabsStore(state => state.activeTab)
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
-  const setCode = useTabsStore(state => state.setCode)
-  const language = useTabsStore(state => state.language)
 
   useEffect(() => {
     window.MonacoEnvironment = {
@@ -117,6 +117,7 @@ export function useMonacoEditor() {
 
   const debouncedExecuteCode = useRef(
     debounce((codeToExecute: string) => {
+      setCode(codeToExecute); // update log code in active tab
       let outputBuffer: string[] = [];
       const originalLog = console.log;
       console.log = (...args) => {
@@ -136,8 +137,9 @@ export function useMonacoEditor() {
         // transpile TypeScript to JavaScript
         const result = ts.transpileModule(codeToExecute, {
           compilerOptions: {
-            module: ts.ModuleKind.CommonJS,
-            target: ts.ScriptTarget.ES5,
+            moduleResolution: ts.ModuleResolutionKind.NodeNext,
+            module: ts.ModuleKind.ESNext,
+            target: ts.ScriptTarget.ESNext,
           }
         });
 
@@ -154,31 +156,44 @@ export function useMonacoEditor() {
 
       console.log = originalLog;
       setOutput(outputBuffer.join('\n'));
+      setIsLoading(false);
     }, 600)
   ).current;
 
-  inputEditor?.onDidChangeModelContent(() => {
-    const newCode = inputEditor.getValue() || '';
-    setCode(newCode);
-  });
+  useEffect(() => {
+    if (inputEditor) {
+      const disposable = inputEditor.onDidChangeModelContent(() => {
+        const newCode = inputEditor.getValue();
+        debouncedExecuteCode(newCode);
+      });
+
+      return () => disposable.dispose();
+    }
+  }, [inputEditor, debouncedExecuteCode]);
 
   useEffect(() => {
+    // set log code from actual tab instance when initializing app
     debouncedExecuteCode(activeTab.code);
-  }, [activeTab.code, debouncedExecuteCode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasHydratedStorage]);
 
   useEffect(() => {
-    // update output editor when changing tabs
+    // update output editor when executing code or changing tabs
     outputEditor?.setValue(output);
   }, [output, outputEditor]);
 
   useEffect(() => {
-    // sync input editor when creating a new tab
+    // sync input editor when creating tab or changing between tabs
     if (inputEditor && activeTab.code !== inputEditor.getValue()) {
+      setIsLoading(true);
       inputEditor.setValue(activeTab.code);
     }
-  }, [activeTab.code, inputEditor]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab.code !== inputEditor?.getValue()]);
 
   return {
+    isLoading,
     inputEditor,
     inputEditorRef,
     outputEditorRef
