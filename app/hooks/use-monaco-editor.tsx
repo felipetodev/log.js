@@ -45,13 +45,15 @@ export function useMonacoEditor() {
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
 
   useEffect(() => {
-    window.MonacoEnvironment = {
-      getWorker(_, label) {
-        if (label === "typescript" || label === "javascript") {
-          return new TsWorker()
-        }
-        return new EditorWorker()
-      },
+    if (!window.MonacoEnvironment) {
+      window.MonacoEnvironment = {
+        getWorker(_, label) {
+          if (label === "typescript" || label === "javascript") {
+            return new TsWorker()
+          }
+          return new EditorWorker()
+        },
+      }
     }
   }, [])
 
