@@ -1,4 +1,4 @@
-import { Fragment } from "react/jsx-runtime";
+import { Fragment } from "react";
 import { useMonacoEditor } from "~/hooks/use-monaco-editor";
 import { useTabs } from "~/hooks/use-tab";
 import { useTabsStore } from "~/store/tabs";

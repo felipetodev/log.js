@@ -1,12 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-interface Tab {
-  id: string;
-  name: string;
-  code: string;
-  createdAt: Date;
-}
+import { type Tab } from '~/lib/types';
 
 interface TabsState {
   _hasHydrated: boolean;
