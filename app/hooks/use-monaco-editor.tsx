@@ -35,7 +35,7 @@ const draculaTheme: editor.IStandaloneThemeData = {
 
 export function useMonacoEditor() {
   const { language, activeTab, setCode } = useTabs()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [inputEditor, setInputEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
   const [outputEditor, setOutputEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
   const [output, setOutput] = useState<string>('')
@@ -66,7 +66,8 @@ export function useMonacoEditor() {
         monaco.editor.setModelLanguage(model, language);
       }
     });
-  }, [inputEditor, outputEditor, language]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
   useEffect(() => {
     if (inputEditorRef.current && !inputEditor && hasHydratedStorage) {
