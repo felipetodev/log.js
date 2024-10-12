@@ -5,7 +5,7 @@ import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
 import { useTabs } from "./use-tab";
-import ts from "typescript";
+import * as Babel from "@babel/standalone";
 
 // Dracula theme definition
 const draculaTheme: editor.IStandaloneThemeData = {
@@ -66,7 +66,7 @@ export function useMonacoEditor() {
         monaco.editor.setModelLanguage(model, language);
       }
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
   useEffect(() => {
@@ -120,7 +120,6 @@ export function useMonacoEditor() {
 
   const debouncedExecuteCode = useRef(
     debounce((codeToExecute: string) => {
-      setCode(codeToExecute); // update log code in active tab
       let outputBuffer: string[] = [];
       const originalLog = console.log;
       console.log = (...args) => {
@@ -137,18 +136,24 @@ export function useMonacoEditor() {
       };
 
       try {
-        // transpile TypeScript to JavaScript
-        const result = ts.transpileModule(codeToExecute, {
-          compilerOptions: {
-            moduleResolution: ts.ModuleResolutionKind.NodeNext,
-            module: ts.ModuleKind.ESNext,
-            target: ts.ScriptTarget.ESNext,
-          }
+        const result = Babel.transform(codeToExecute, {
+          presets: [
+            'env',
+            'typescript'
+          ],
+          plugins: [
+            ["proposal-pipeline-operator", { proposal: "minimal" }],
+          ],
+          filename: "log.ts",
         });
 
-        // execute the transpiled JavaScript
-        const func = new Function(result.outputText);
-        func();
+        if (result?.code) {
+          // Execute the transformed code
+          const func = new Function(result.code);
+          func();
+        } else {
+          throw new Error("Babel transformation failed");
+        }
       } catch (error) {
         if (error instanceof Error) {
           outputBuffer = [`Error: ${error.message}`];
@@ -167,18 +172,18 @@ export function useMonacoEditor() {
     if (inputEditor) {
       const disposable = inputEditor.onDidChangeModelContent(() => {
         const newCode = inputEditor.getValue();
-        debouncedExecuteCode(newCode);
+        setCode(newCode);
       });
 
       return () => disposable.dispose();
     }
-  }, [inputEditor, debouncedExecuteCode]);
+  }, [inputEditor, setCode]);
 
   useEffect(() => {
-    // set log code from actual tab instance when initializing app
+    // set log code from actual tab instance when initializing app or changing tabs
     debouncedExecuteCode(activeTab.code);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasHydratedStorage]);
+  }, [activeTab.code, hasHydratedStorage]);
 
   useEffect(() => {
     // update output editor when executing code or changing tabs
