@@ -10,12 +10,12 @@ export function Header() {
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
 
   return (
-    <div className="flex h-8 w-full bg-[#282A36]/70 border-b border-neutral-700">
+    <div className="flex h-8 w-full bg-[#282A36]/70 border-b border-neutral-700 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {hasHydratedStorage ?
         tabs?.map(tab => (
           <Fragment key={tab.id}>
             {tab.id === activeTab.id ? (
-              <div className="flex items-center justify-between text-white bg-[#282A36] h-full pl-4 pr-1 w-40 rounded-t-lg mt-0.5 ml-0.5 border-x border-t border-neutral-700">
+              <div className="flex items-center justify-between text-white bg-[#282A36] pl-4 pr-1 w-40 rounded-t-lg ml-[3px] mt-auto h-[calc(100%-2px)] border-x border-t border-neutral-700">
                 <span className="text-sm font-semibold truncate">
                   {tab.name}
                 </span>
@@ -35,7 +35,7 @@ export function Header() {
                   setActiveTab(tab);
                   inputEditor?.setValue(tab.code);
                 }}
-                className="flex items-center justify-between text-white bg-[#282A36] opacity-50 h-[calc(100%-2px)] px-4 w-40 rounded-t-lg mt-auto ml-0.5 hover:opacity-100 border-x border-t border-transparent hover:border-neutral-700 transition-all disabled:cursor-not-allowed"
+                className="flex items-center justify-between text-white bg-[#282A36] opacity-50 h-[calc(100%-3px)] px-4 w-40 rounded-t-lg mt-auto ml-[3px] hover:opacity-100 border-x border-t border-transparent hover:border-neutral-700 transition-all disabled:cursor-not-allowed"
               >
                 <span className="text-sm truncate">
                   {tab.name}
