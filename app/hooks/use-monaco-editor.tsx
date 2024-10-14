@@ -4,34 +4,9 @@ import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
-import { useTabs } from "./use-tab";
+import { useTabs } from "~/hooks/use-tab";
+import { dracula } from "~/lib/themes/dracula";
 import * as Babel from "@babel/standalone";
-
-// Dracula theme definition
-const draculaTheme: editor.IStandaloneThemeData = {
-  base: 'vs-dark',
-  inherit: true,
-  rules: [
-    // { token: '', foreground: '50FA7B' },
-    { token: 'comment', foreground: '6272A4' },
-    { token: 'string', foreground: 'F1FA8C' },
-    { token: 'keyword', foreground: 'FF79C6' },
-    { token: 'number', foreground: 'BD93F9' },
-    { token: 'operator', foreground: 'FF79C6' },
-    { token: 'function', foreground: '50FA7B' },
-    { token: 'variable', foreground: 'F8F8F2' },
-    { token: 'variable.parameter', foreground: 'FFB86C' },
-    { token: 'type', foreground: '8BE9FD' },
-    { token: 'class', foreground: '8BE9FD' },
-  ],
-  colors: {
-    'editor.background': '#282A36',
-    'editor.foreground': '#F8F8F2',
-    'editor.lineHighlightBackground': '#44475A',
-    'editorCursor.foreground': '#F8F8F2',
-    'editorWhitespace.foreground': '#6272A4',
-  }
-};
 
 export function useMonacoEditor() {
   const { language, activeTab, setCode } = useTabs()
@@ -72,7 +47,7 @@ export function useMonacoEditor() {
   useEffect(() => {
     if (inputEditorRef.current && !inputEditor && hasHydratedStorage) {
       import('monaco-editor').then((monaco) => {
-        monaco.editor.defineTheme('dracula', draculaTheme);
+        monaco.editor.defineTheme('dracula', dracula);
         const newEditor = monaco.editor.create(inputEditorRef.current!, {
           value: activeTab.code,
           language,
