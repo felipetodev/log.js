@@ -6,7 +6,58 @@ import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
 import { useTabs } from "~/hooks/use-tab";
 import { dracula } from "~/lib/themes/dracula";
-import * as Babel from "@babel/standalone";
+import { transform } from "@babel/standalone";
+
+function babelTransform(code: string) {
+  return transform(code, {
+    presets: [
+      'env',
+      'typescript',
+    ],
+    plugins: [
+      ["proposal-pipeline-operator", { proposal: "minimal" }],
+    ],
+    filename: "log.ts",
+  }).code;
+}
+
+function executeCode(codeToExecute: string) {
+  let outputBuffer: string[] = [];
+  const originalLog = console.log;
+  console.log = (...args) => {
+    const formattedArgs = args.map(arg => {
+      if (typeof arg === 'object' && arg !== null) {
+        return JSON.stringify(arg, null, 2);
+      }
+      if (typeof arg === 'string') {
+        return `'${arg}'`;
+      }
+      return String(arg);
+    });
+    outputBuffer.push(formattedArgs.join(' '));
+  };
+
+  try {
+    const code = babelTransform(codeToExecute);
+
+    if (code) {
+      // Execute the transformed code
+      const func = new Function(code);
+      func();
+    } else {
+      throw new Error("Babel transformation failed");
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      outputBuffer = [`Error: ${error.message}`];
+    } else {
+      outputBuffer = ['An unknown error occurred'];
+    }
+  }
+
+  console.log = originalLog;
+  return outputBuffer.join('\n')
+}
 
 export function useMonacoEditor() {
   const { language, activeTab, setCode } = useTabs()
@@ -95,50 +146,8 @@ export function useMonacoEditor() {
 
   const debouncedExecuteCode = useRef(
     debounce((codeToExecute: string) => {
-      let outputBuffer: string[] = [];
-      const originalLog = console.log;
-      console.log = (...args) => {
-        const formattedArgs = args.map(arg => {
-          if (typeof arg === 'object' && arg !== null) {
-            return JSON.stringify(arg, null, 2);
-          }
-          if (typeof arg === 'string') {
-            return `"${arg}"`;
-          }
-          return String(arg);
-        });
-        outputBuffer.push(formattedArgs.join(' '));
-      };
-
-      try {
-        const result = Babel.transform(codeToExecute, {
-          presets: [
-            'env',
-            'typescript'
-          ],
-          plugins: [
-            ["proposal-pipeline-operator", { proposal: "minimal" }],
-          ],
-          filename: "log.ts",
-        });
-
-        if (result?.code) {
-          // Execute the transformed code
-          const func = new Function(result.code);
-          func();
-        } else {
-          throw new Error("Babel transformation failed");
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          outputBuffer = [`Error: ${error.message}`];
-        } else {
-          outputBuffer = ['An unknown error occurred'];
-        }
-      }
-
-      console.log = originalLog;
-      setOutput(outputBuffer.join('\n'));
+      const output = executeCode(codeToExecute);
+      setOutput(output);
       setIsLoading(false);
     }, 600)
   ).current;
