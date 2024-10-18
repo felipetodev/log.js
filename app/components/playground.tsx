@@ -23,7 +23,7 @@ export function Playground() {
               <div ref={inputEditorRef} className="size-full" />
               <LanguageSwitch />
             </Panel>
-            <PanelResizeHandle className="w-[1px] bg-neutral-700/80 data-[resize-handle-state=drag]:bg-neutral-600" />
+            <PanelResizeHandle className="w-[1px] bg-neutral-700/80 data-[resize-handle-state=drag]:bg-neutral-600 transition-colors" />
             <Panel defaultSize={50} minSize={20}>
               <div ref={outputEditorRef} className="size-full" />
             </Panel>
