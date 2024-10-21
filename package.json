@@ -23,7 +23,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-resizable-panels": "^2.1.4",
-    "zustand": "5.0.0-rc.2"
+    "zustand": "5.0.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.12.1",
