@@ -5,7 +5,7 @@ import type { MetaFunction } from "@remix-run/node";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "lab.js 🧪" },
+    { title: "log.js 🎃" },
     { name: "description", content: "A beautiful playground for JavaScript and TypeScript" },
   ];
 };

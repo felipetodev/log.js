@@ -6,6 +6,7 @@ import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
 import { useTabs } from "~/hooks/use-tab";
 import { dracula } from "~/lib/themes/dracula";
+import { scaryLogger } from "~/lib/halloween-logger";
 import { transform } from "@babel/standalone";
 
 function babelTransform(code: string) {
@@ -49,7 +50,8 @@ function executeCode(codeToExecute: string) {
     }
   } catch (error) {
     if (error instanceof Error) {
-      outputBuffer = [`Error: ${error.message}`];
+      const halloweenLog = scaryLogger();
+      outputBuffer = [`Error: ${error.message} ${halloweenLog}`];
     } else {
       outputBuffer = ['An unknown error occurred'];
     }
