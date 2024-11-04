@@ -64,11 +64,11 @@ function executeCode(codeToExecute: string) {
 export function useMonacoEditor() {
   const { language, activeTab, setCode } = useTabs()
   const [isLoading, setIsLoading] = useState(true)
-  const [inputEditor, setInputEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
-  const [outputEditor, setOutputEditor] = useState<editor.IStandaloneCodeEditor | null>(null)
   const [output, setOutput] = useState<string>('')
-  const inputEditorRef = useRef<HTMLDivElement>(null)
-  const outputEditorRef = useRef<HTMLDivElement>(null)
+  const inputEditor = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const outputEditor = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const inputEditorContainer = useRef<HTMLDivElement>(null)
+  const outputEditorContainer = useRef<HTMLDivElement>(null)
 
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
 
@@ -89,7 +89,7 @@ export function useMonacoEditor() {
     // change - update editor options
     if (!inputEditor || !outputEditor) return;
     import('monaco-editor').then((monaco) => {
-      const model = inputEditor.getModel();
+      const model = inputEditor.current?.getModel();
       if (model) {
         monaco.editor.setModelLanguage(model, language);
       }
@@ -98,10 +98,10 @@ export function useMonacoEditor() {
   }, [language]);
 
   useEffect(() => {
-    if (inputEditorRef.current && !inputEditor && hasHydratedStorage) {
+    if (inputEditorContainer.current && !inputEditor.current && hasHydratedStorage) {
       import('monaco-editor').then((monaco) => {
         monaco.editor.defineTheme('dracula', dracula);
-        const newEditor = monaco.editor.create(inputEditorRef.current!, {
+        inputEditor.current = monaco.editor.create(inputEditorContainer.current!, {
           value: activeTab.code,
           language,
           theme: 'dracula',
@@ -113,14 +113,12 @@ export function useMonacoEditor() {
             enabled: false
           }
         });
-
-        setInputEditor(newEditor);
       });
     }
 
-    if (outputEditorRef.current && !outputEditor) {
+    if (outputEditorContainer.current && !outputEditor.current) {
       import('monaco-editor').then((monaco) => {
-        const outputEditor = monaco.editor.create(outputEditorRef.current!, {
+        outputEditor.current = monaco.editor.create(outputEditorContainer.current!, {
           value: '',
           language,
           theme: 'dracula',
@@ -132,15 +130,13 @@ export function useMonacoEditor() {
             enabled: false
           }
         });
-
-        setOutputEditor(outputEditor);
       });
     }
 
     return () => {
-      inputEditor?.dispose();
-      outputEditor?.dispose();
-    };
+      inputEditor.current?.dispose();
+      outputEditor.current?.dispose();
+    }
 
     // hasHydrated prevents create a new editor with default states
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -155,15 +151,17 @@ export function useMonacoEditor() {
   ).current;
 
   useEffect(() => {
-    if (inputEditor) {
-      const disposable = inputEditor.onDidChangeModelContent(() => {
-        const newCode = inputEditor.getValue();
+    if (inputEditor.current) {
+      const disposable = inputEditor.current.onDidChangeModelContent(() => {
+        const newCode = inputEditor.current?.getValue() || '';
         setCode(newCode);
       });
 
       return () => disposable.dispose();
     }
-  }, [inputEditor, setCode]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputEditor.current, setCode]);
 
   useEffect(() => {
     // set log code from actual tab instance when initializing app or changing tabs
@@ -173,23 +171,22 @@ export function useMonacoEditor() {
 
   useEffect(() => {
     // update output editor when executing code or changing tabs
-    outputEditor?.setValue(output);
+    outputEditor?.current?.setValue(output);
   }, [output, outputEditor]);
 
   useEffect(() => {
     // sync input editor when creating tab or changing between tabs
-    if (inputEditor && activeTab.code !== inputEditor.getValue()) {
+    if (inputEditor.current && activeTab.code !== inputEditor.current?.getValue()) {
       setIsLoading(true);
-      inputEditor.setValue(activeTab.code);
+      inputEditor.current.setValue(activeTab.code);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab.code !== inputEditor?.getValue()]);
+  }, [activeTab.code !== inputEditor.current?.getValue()]);
 
   return {
     isLoading,
-    inputEditor,
-    inputEditorRef,
-    outputEditorRef
+    inputEditorContainer,
+    outputEditorContainer
   }
 }

@@ -9,8 +9,8 @@ import {
 
 export function Playground() {
   const {
-    inputEditorRef,
-    outputEditorRef
+    inputEditorContainer,
+    outputEditorContainer
   } = useMonacoEditor()
 
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
@@ -20,13 +20,13 @@ export function Playground() {
         <div className="h-[calc(100%-56px)] bg-[#282A36]">
           <PanelGroup autoSaveId="editor" direction="horizontal">
             <Panel defaultSize={50} minSize={20} className="relative">
-              <div ref={inputEditorRef} className="size-full" />
+              <div ref={inputEditorContainer} className="size-full" />
               <LanguageSwitch />
               <img src='/cobweb.svg' alt="cobweb" className="absolute bottom-0 select-none pointer-events-none opacity-10 rotate-180" />
             </Panel>
             <PanelResizeHandle className="w-[1.5px] bg-neutral-700/80 data-[resize-handle-state=drag]:bg-neutral-600 transition-colors" />
             <Panel defaultSize={50} minSize={20} className="relative">
-              <div ref={outputEditorRef} className="size-full" />
+              <div ref={outputEditorContainer} className="size-full" />
               <img src='/cobweb.svg' alt="cobweb" className="absolute top-0 select-none pointer-events-none opacity-10" />
             </Panel>
           </PanelGroup>

@@ -5,7 +5,7 @@ import { useTabs } from "~/hooks/use-tab";
 import { useTabsStore } from "~/store/tabs";
 
 export function Header() {
-  const { isLoading, inputEditor } = useMonacoEditor();
+  const { isLoading } = useMonacoEditor();
   const { tabs, activeTab, createNewTab, deleteTab, setActiveTab } = useTabs()
 
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
@@ -21,7 +21,11 @@ export function Header() {
                   {tab.name}
                 </span>
                 {tabs.length > 1 && (
-                  <button className="ml-0.5 hover:bg-neutral-500/10 p-[3px] rounded-md border border-transparent hover:border-neutral-700" onClick={() => deleteTab(tab.id)}>
+                  <button
+                    className="ml-0.5 hover:bg-neutral-500/10 p-[3px] rounded-md border border-transparent hover:border-neutral-700"
+                    aria-label="Delete tab"
+                    onClick={() => deleteTab(tab.id)}
+                  >
                     <XIcon className="size-3.5" />
                   </button>
                 )}
@@ -29,10 +33,8 @@ export function Header() {
             ) : (
               <button
                 disabled={isLoading}
-                onClick={() => {
-                  setActiveTab(tab);
-                  inputEditor?.setValue(tab.code);
-                }}
+                onClick={() => setActiveTab(tab)}
+                aria-label="Switch tab"
                 className="flex items-center justify-between text-white bg-[#282A36] opacity-50 h-[calc(100%-3px)] px-4 w-40 rounded-t-lg mt-auto ml-[3px] hover:opacity-100 border-x border-t border-transparent hover:border-neutral-700 transition-all disabled:cursor-not-allowed"
               >
                 <span className="text-sm truncate">
@@ -51,6 +53,7 @@ export function Header() {
       <button
         disabled={isLoading}
         onClick={createNewTab}
+        aria-label="Create new tab"
         className="px-1 text-white hover:bg-[#282A36] rounded-lg mt-1 mb-0.5 ml-0.5 border border-transparent hover:border-neutral-700 transition-colors"
       >
         <PlusIcon className="size-4" />
