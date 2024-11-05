@@ -22,12 +22,10 @@ export function Playground() {
             <Panel defaultSize={50} minSize={20} className="relative">
               <div ref={inputEditorContainer} className="size-full" />
               <LanguageSwitch />
-              <img src='/cobweb.svg' alt="cobweb" className="absolute bottom-0 select-none pointer-events-none opacity-10 rotate-180" />
             </Panel>
             <PanelResizeHandle className="w-[1.5px] bg-neutral-700/80 data-[resize-handle-state=drag]:bg-neutral-600 transition-colors" />
-            <Panel defaultSize={50} minSize={20} className="relative">
+            <Panel defaultSize={50} minSize={20}>
               <div ref={outputEditorContainer} className="size-full" />
-              <img src='/cobweb.svg' alt="cobweb" className="absolute top-0 select-none pointer-events-none opacity-10" />
             </Panel>
           </PanelGroup>
         </div>

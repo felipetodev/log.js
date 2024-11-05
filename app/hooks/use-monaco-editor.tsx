@@ -6,7 +6,6 @@ import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
 import { useTabs } from "~/hooks/use-tab";
 import { dracula } from "~/lib/themes/dracula";
-import { scaryLogger } from "~/lib/halloween-logger";
 import { transform } from "@babel/standalone";
 
 function babelTransform(code: string) {
@@ -50,8 +49,7 @@ function executeCode(codeToExecute: string) {
     }
   } catch (error) {
     if (error instanceof Error) {
-      const halloweenLog = scaryLogger();
-      outputBuffer = [`Error: ${error.message} ${halloweenLog}`];
+      outputBuffer = [`Error: ${error.message}`];
     } else {
       outputBuffer = ['An unknown error occurred'];
     }
@@ -116,7 +114,7 @@ export function useMonacoEditor() {
       });
     }
 
-    if (outputEditorContainer.current && !outputEditor.current) {
+    if (outputEditorContainer.current && !outputEditor.current && hasHydratedStorage) {
       import('monaco-editor').then((monaco) => {
         outputEditor.current = monaco.editor.create(outputEditorContainer.current!, {
           value: '',
