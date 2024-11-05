@@ -87,7 +87,7 @@ export function useMonacoEditor() {
 
   useEffect(() => {
     // change - update editor options
-    if (!inputEditor || !outputEditor) return;
+    if (!inputEditor.current || !outputEditor.current) return;
     import('monaco-editor').then((monaco) => {
       const model = inputEditor.current?.getModel();
       if (model) {
