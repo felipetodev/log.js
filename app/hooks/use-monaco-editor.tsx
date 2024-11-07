@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react"
 import { editor } from "monaco-editor";
-import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
+import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
+import CodeExecutionWorker from '~/lib/worker/code-execution?worker';
 import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
 import { useTabs } from "~/hooks/use-tab";
@@ -19,44 +20,6 @@ function babelTransform(code: string) {
     ],
     filename: "log.ts",
   }).code;
-}
-
-function executeCode(codeToExecute: string) {
-  let outputBuffer: string[] = [];
-  const originalLog = console.log;
-  console.log = (...args) => {
-    const formattedArgs = args.map(arg => {
-      if (typeof arg === 'object' && arg !== null) {
-        return JSON.stringify(arg, null, 2);
-      }
-      if (typeof arg === 'string') {
-        return `'${arg}'`;
-      }
-      return String(arg);
-    });
-    outputBuffer.push(formattedArgs.join(' '));
-  };
-
-  try {
-    const code = babelTransform(codeToExecute);
-
-    if (code) {
-      // Execute the transformed code
-      const func = new Function(code);
-      func();
-    } else {
-      throw new Error("Babel transformation failed");
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      outputBuffer = [`Error: ${error.message}`];
-    } else {
-      outputBuffer = ['An unknown error occurred'];
-    }
-  }
-
-  console.log = originalLog;
-  return outputBuffer.join('\n')
 }
 
 export function useMonacoEditor() {
@@ -140,11 +103,35 @@ export function useMonacoEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasHydratedStorage]);
 
+  function executeCode(codeToExecute: string) {
+    const worker = new CodeExecutionWorker();
+    const transformedCode = babelTransform(codeToExecute);
+
+    const loader = setTimeout(() => {
+      setIsLoading(true);
+      setOutput('Executing... ⏳');
+    }, 1000);
+
+    const timeout = setTimeout(() => {
+      worker.terminate();
+      setOutput('Execution timed out.');
+      setIsLoading(false);
+    }, 20000);
+
+    worker.onmessage = (event) => {
+      clearTimeout(timeout);
+      clearTimeout(loader);
+      setOutput(event.data.output);
+      setIsLoading(false);
+      worker.terminate();
+    };
+
+    worker.postMessage({ code: transformedCode });
+  }
+
   const debouncedExecuteCode = useRef(
     debounce((codeToExecute: string) => {
-      const output = executeCode(codeToExecute);
-      setOutput(output);
-      setIsLoading(false);
+      executeCode(codeToExecute);
     }, 600)
   ).current;
 
@@ -175,7 +162,11 @@ export function useMonacoEditor() {
   useEffect(() => {
     // sync input editor when creating tab or changing between tabs
     if (inputEditor.current && activeTab.code !== inputEditor.current?.getValue()) {
-      setIsLoading(true);
+      if (activeTab.code === '') {
+        // focus editor when creating a new tab or switching to an empty tab
+        inputEditor.current.focus();
+      }
+
       inputEditor.current.setValue(activeTab.code);
     }
 

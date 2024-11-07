@@ -1,6 +1,7 @@
 import { useMonacoEditor } from "~/hooks/use-monaco-editor";
 import { useTabsStore } from "~/store/tabs";
 import { LanguageSwitch } from "./language-switch";
+import { LoopLoader } from "./loop-loader";
 import {
   Panel,
   PanelGroup,
@@ -22,6 +23,7 @@ export function Playground() {
             <Panel defaultSize={50} minSize={20} className="relative">
               <div ref={inputEditorContainer} className="size-full" />
               <LanguageSwitch />
+              <LoopLoader />
             </Panel>
             <PanelResizeHandle className="w-[1.5px] bg-neutral-700/80 data-[resize-handle-state=drag]:bg-neutral-600 transition-colors" />
             <Panel defaultSize={50} minSize={20}>
