@@ -18,7 +18,7 @@ export const loader = () => {
       screenshots: [
         {
           src: "/og.png",
-          sizes: "1920x1280",
+          sizes: "1600x1067",
           type: "image/png",
           platform: "web",
           // @ts-expect-error - remix-pwa should update their types
