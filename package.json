@@ -1,5 +1,5 @@
 {
-  "name": "lab.js",
+  "name": "log.js",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -10,6 +10,11 @@
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc"
   },
+  "author": {
+    "name": "Felipe Ossandon",
+    "url": "https://x.com/fe_ossandon"
+  },
+  "license": "MIT",
   "dependencies": {
     "@babel/plugin-proposal-pipeline-operator": "^7.25.7",
     "@babel/preset-typescript": "^7.25.7",
