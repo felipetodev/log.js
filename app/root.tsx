@@ -33,6 +33,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href="/logo.svg" />
         <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="canonical" href="https://logjs.vercel.app/" />
+        <meta
+          name="keywords"
+          content="Playground, VSCode, JavaScript, Typescript, Node, React, Logjs, Runjs, Felipe Ossandon"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="log.js" />
+        <meta
+          property="og:description"
+          content="A beautiful web playground for JavaScript and TypeScript"
+        />
+        <meta
+          name="image"
+          property="og:image"
+          content="https://logjs.vercel.app/og.png"
+        />
+        <meta property="og:image:width" content="1600" />
+        <meta property="og:image:height" content="1067" />
+        <meta property="og:url" content="https://logjs.vercel.app/" />
+        <meta property="og:site_name" content="log.js" />
+        <meta name="author" content="@fe_ossandon" />
+        <meta
+          name="twitter:image"
+          content="https://logjs.vercel.app/og.png"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:creator" content="@fe_ossandon" />
+        <meta name="twitter:site" content="@fe_ossandon" />
+        <meta name="twitter:title" content="log.js" />
         <Meta />
         <Links />
       </head>

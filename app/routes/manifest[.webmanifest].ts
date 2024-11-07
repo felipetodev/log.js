@@ -5,9 +5,9 @@ import { json } from '@remix-run/node';
 export const loader = () => {
   return json(
     {
-      short_name: "log.js 🎃",
-      name: "log.js 🎃",
-      description: "A beautiful playground web for JavaScript and TypeScript",
+      short_name: "log.js 🧪",
+      name: "log.js 🧪",
+      description: "A beautiful web playground for JavaScript and TypeScript",
       start_url: "/",
       display: "standalone",
       categories: [
@@ -17,13 +17,13 @@ export const loader = () => {
       ],
       screenshots: [
         {
-          src: "/screenshot.png",
+          src: "/og.png",
           sizes: "1920x1280",
           type: "image/png",
           platform: "web",
           // @ts-expect-error - remix-pwa should update their types
           form_factor: "wide",
-          label: "log.js 🎃"
+          label: "log.js 🧪"
         }
       ],
       icons: [

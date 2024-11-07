@@ -1,6 +1,6 @@
-# Log.js 🧪
-
-![app-screenshot](https://github.com/user-attachments/assets/9c6af6ea-f9ba-457a-9950-983308b67f25)
+<p align="center">
+  <img src="./public/og.png" width="100%" alt="Banner" />
+</p>
 
 ## Getting Started
 
