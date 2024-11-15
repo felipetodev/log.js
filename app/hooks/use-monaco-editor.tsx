@@ -105,28 +105,37 @@ export function useMonacoEditor() {
 
   function executeCode(codeToExecute: string) {
     const worker = new CodeExecutionWorker();
-    const transformedCode = babelTransform(codeToExecute);
 
-    const loader = setTimeout(() => {
-      setIsLoading(true);
-      setOutput('Executing... ⏳');
-    }, 1000);
-
-    const timeout = setTimeout(() => {
-      worker.terminate();
-      setOutput('Execution timed out.');
-      setIsLoading(false);
-    }, 20000);
-
-    worker.onmessage = (event) => {
-      clearTimeout(timeout);
-      clearTimeout(loader);
-      setOutput(event.data.output);
-      setIsLoading(false);
-      worker.terminate();
-    };
-
-    worker.postMessage({ code: transformedCode });
+    try {
+      const transformedCode = babelTransform(codeToExecute);
+  
+      const loader = setTimeout(() => {
+        setIsLoading(true);
+        setOutput('Executing... ⏳');
+      }, 1000);
+  
+      const timeout = setTimeout(() => {
+        worker.terminate();
+        setOutput('Execution timed out.');
+        setIsLoading(false);
+      }, 20000);
+  
+      worker.onmessage = (event) => {
+        clearTimeout(timeout);
+        clearTimeout(loader);
+        setOutput(event.data.output);
+        setIsLoading(false);
+        worker.terminate();
+      };
+  
+      worker.postMessage({ code: transformedCode });
+    } catch (error) {
+      if (error instanceof Error) {
+        setOutput(`Error: ${error.message}`);
+      } else {
+        setOutput('An unknown error occurred');
+      }
+    }
   }
 
   const debouncedExecuteCode = useRef(
