@@ -7,6 +7,7 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import { Analytics } from '@vercel/analytics/react';
+import { NuqsAdapter } from "nuqs/adapters/remix";
 import { useSWEffect } from '@remix-pwa/sw'
 
 import "./tailwind.css";
@@ -77,5 +78,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <NuqsAdapter>
+      <Outlet />
+    </NuqsAdapter>
+  );
 }

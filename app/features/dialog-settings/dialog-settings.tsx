@@ -1,21 +1,35 @@
-import { DialogActions } from "./components/dialog-actions"
-import { SettingsIcon } from "lucide-react"
+import { DialogActions } from "~/features/dialog-settings/components/dialog-actions";
+import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/ui/dialog"
+} from "~/ui/dialog";
 
-export function DialogSettings() {
+export function DialogSettings({ children }: { children: React.ReactNode }) {
+  const [{ modal }, setModal] = useQueryStates(
+    {
+      'modal': parseAsBoolean.withDefault(false),
+      'option': parseAsString.withDefault('')
+    },
+    parseAsBoolean.withDefault(false).withOptions({ shallow: false })
+  );
+
   return (
-    <Dialog open>
+    <Dialog
+      open={modal}
+      onOpenChange={(modal) => {
+        if (!modal) {
+          setModal(null) // clear all keys
+        } else {
+          setModal({ modal })
+        }
+      }}
+    >
       <DialogTrigger asChild>
-        {/* change trigger styles if actual UI changes */}
-        <button className="absolute bg-[#4e78cc] h-full px-4 transition-opacity hover:opacity-70">
-          <SettingsIcon className="size-3.5 inline" />
-        </button>
+        {children}
       </DialogTrigger>
       <DialogContent className="md:max-w-[680px]">
         <DialogHeader>

@@ -1,9 +1,14 @@
+import { SettingsIcon } from "lucide-react";
 import { DialogSettings } from "~/features/dialog-settings/dialog-settings";
 
 export function Footer() {
   return (
     <footer className="relative flex items-center overflow-hidden w-full h-6 text-xs text-white bg-[#282A36]/70 border-t border-neutral-700">
-      <DialogSettings />
+      <DialogSettings>
+        <button className="absolute bg-[#4e78cc] h-full px-4 transition-opacity hover:opacity-70 outline-none">
+          <SettingsIcon className="size-3.5 inline" />
+        </button>
+      </DialogSettings>
       <div className="flex space-x-2 mx-auto">
         <h4>
           crafted by{" "}

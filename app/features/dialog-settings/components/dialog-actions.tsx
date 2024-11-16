@@ -16,8 +16,10 @@ import {
 import { InputNumber } from "~/ui/input-number"
 import { SettingsOption, SettingsTab } from "~/lib/types";
 import { SETTINGS_CONTENT, SETTINGS_TABS } from "../lib/constants"
+import { useQueryState } from "nuqs";
 
 export function DialogActions() {
+  const [tab, setTab] = useQueryState('option', { defaultValue: 'general' });
   const [options, setOptions] = useState(SETTINGS_CONTENT);
 
   const onOptionChange = ({ key, value, option }: { key: string; value: string | boolean | number, option: SettingsTab }) => {
@@ -85,7 +87,12 @@ export function DialogActions() {
   }, [])
 
   return (
-    <Tabs defaultValue="general" orientation="vertical" className="flex flex-col gap-6 md:flex-row">
+    <Tabs
+      defaultValue={tab}
+      orientation="vertical"
+      className="flex flex-col gap-6 md:flex-row"
+      onValueChange={setTab}
+    >
       <TabsList>
         {SETTINGS_TABS.map((tab) => {
           const { icon: Icon } = tab
