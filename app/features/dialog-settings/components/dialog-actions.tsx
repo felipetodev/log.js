@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback } from "react"
 import { Switch } from "~/ui/switch"
 import {
   Tabs,
@@ -13,28 +13,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/ui/select"
-import { InputNumber } from "~/ui/input-number"
-import { SettingsOption, SettingsTab } from "~/lib/types";
-import { SETTINGS_CONTENT, SETTINGS_TABS } from "../lib/constants"
 import { useQueryState } from "nuqs";
+import { InputNumber } from "~/ui/input-number"
+import { useSettingsStore } from "~/store/settings"
+import { SettingsOption, SettingsTab } from "~/lib/types";
+import { SETTINGS_TABS } from "../lib/constants"
 
 export function DialogActions() {
   const [tab, setTab] = useQueryState('option', { defaultValue: 'general' });
-  const [options, setOptions] = useState(SETTINGS_CONTENT);
+  const options = useSettingsStore((state) => state.form)
+  const setOptions = useSettingsStore((state) => state.setForm)
 
-  const onOptionChange = ({ key, value, option }: { key: string; value: string | boolean | number, option: SettingsTab }) => {
-    setOptions((prev) => ({
-      ...prev,
-      [option]: {
-        ...prev[option],
-        options: prev[option].options.map((o) => {
-          if (o.name === key) {
-            return { ...o, value }
-          }
-          return o
-        })
-      }
-    }))
+  const onOptionChange = <T,>({ key, value, option }: { key: string, value: T, option: SettingsTab }) => {
+    setOptions({ key, value, option })
   }
 
   const renderOption = useCallback((option: SettingsOption<number | string>, optionType: SettingsTab) => {

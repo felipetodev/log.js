@@ -5,6 +5,7 @@ import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import CodeExecutionWorker from '~/lib/worker/code-execution?worker';
 import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
+import { useSettingsStore } from "~/store/settings";
 import { useTabs } from "~/hooks/use-tab";
 import { dracula } from "~/lib/themes/dracula";
 import { transform } from "@babel/standalone";
@@ -23,7 +24,7 @@ function babelTransform(code: string) {
 }
 
 export function useMonacoEditor() {
-  const { language, activeTab, setCode } = useTabs()
+  const { activeTab, setCode } = useTabs()
   const [isLoading, setIsLoading] = useState(true)
   const [output, setOutput] = useState<string>('')
   const inputEditor = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -32,6 +33,7 @@ export function useMonacoEditor() {
   const outputEditorContainer = useRef<HTMLDivElement>(null)
 
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
+  const language = useSettingsStore(state => state.language);
 
   useEffect(() => {
     if (!window.MonacoEnvironment) {
