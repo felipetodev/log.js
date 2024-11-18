@@ -36,6 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <link rel="icon" type="image/svg+xml" href="/logo.svg" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="canonical" href="https://logjs.vercel.app/" />
+        <link as="font" rel="preload" crossOrigin="anonymous" href="/fonts/CascadiaCodePL.woff2" />
         <meta
           name="keywords"
           content="Playground, VSCode, JavaScript, Typescript, Node, React, Logjs, Runjs, Felipe Ossandon"
@@ -67,7 +68,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="overflow-hidden">
+      <body className="overflow-hidden bg-[#282A36]">
         {children}
         <ScrollRestoration />
         <Scripts />

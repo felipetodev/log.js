@@ -60,6 +60,12 @@
 }
 
 @layer base {
+  @font-face {
+    font-family: "Cascadia Code PL";
+    src: url("/fonts/CascadiaCodePL.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+  }
   * {
     @apply border-border;
   }

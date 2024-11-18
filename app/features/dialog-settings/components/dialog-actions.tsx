@@ -74,11 +74,11 @@ export function DialogActions() {
             </SelectContent>
           </Select>
         )
-      case "button":
+      case "link":
         return (
-          <button className="border rounded-md px-2 py-1.5">
+          <a className="border rounded-md px-2 py-1.5 transition-colors hover:bg-neutral-100" href={option.href} target="_blank" rel="noopener noreferrer" aria-label={option.name}>
             {option.name}
-          </button>
+          </a>
         )
     }
   }, [])
@@ -108,7 +108,7 @@ export function DialogActions() {
           style={
             { "--primary": "238.7 83.5% 66.7%", "--ring": "238.7 83.5% 66.7%" } as React.CSSProperties
           }
-          className="bg-primary text-secondary font-medium border flex items-center justify-center gap-2 rounded-md px-2 whitespace-nowrap py-1.5 text-sm mt-auto mb-6"
+          className="hidden md:flex bg-primary text-secondary font-medium border items-center justify-center gap-2 rounded-md px-2 whitespace-nowrap py-1.5 text-sm mt-auto mb-6"
         >
           GitHub ⭐️
         </a>
@@ -120,7 +120,7 @@ export function DialogActions() {
             <div className="flex flex-col gap-3 px-4 pb-6 text-sm text-token-text-primary sm:px-6 md:ps-0 md:pt-5">
               {options[value].options.map((option) => (
                 <div key={option.name} className="flex justify-between items-center border-b pb-3 last-of-type:border-b-0">
-                  {option.type !== 'button' && <span>{option.name}</span>}
+                  {option.type !== 'button' && option.type !== 'link' && <span>{option.name}</span>}
                   {renderOption(option, value)}
                 </div>
               ))}

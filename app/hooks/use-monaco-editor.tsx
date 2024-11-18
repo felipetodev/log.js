@@ -1,3 +1,4 @@
+/* eslint-disable import/namespace */
 import { useEffect, useState, useRef } from "react"
 import { editor } from "monaco-editor";
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';

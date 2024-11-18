@@ -13,7 +13,7 @@ export const SETTINGS_TABS: { value: SettingsTab; icon: React.ComponentType<Luci
   { value: "general", icon: SettingsIcon, name: "General", disabled: false },
   { value: "appearance", icon: UserPenIcon, name: "Appearance", disabled: false },
   { value: "formatting", icon: BracesIcon, name: "Formatting", disabled: false },
-  { value: "help", icon: CircleHelpIcon, name: "Help", disabled: false },
+  { value: "support", icon: CircleHelpIcon, name: "Support", disabled: false },
   { value: "ai", icon: BotIcon, name: "AI", disabled: true },
 ] as const
 
@@ -52,6 +52,7 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
         monacoId: "fontFamily",
         values: [
           { value: "monospace", name: "Monospace" },
+          { value: "Cascadia Code PL", name: "Cascadia Code-PL" },
           { value: "Monaco", name: "Monaco" },
           { value: "Courier New", name: "Courier New" },
           { value: "sans-serif", name: "Sans-serif" },
@@ -62,6 +63,12 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
         monacoId: "fontSize",
         type: "number",
         value: 16
+      },
+      {
+        name: "Font ligatures",
+        monacoId: "fontLigatures",
+        type: "switch",
+        value: false
       },
       {
         name: "Show line numbers",
@@ -100,6 +107,13 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
       { name: "Print Width", type: "number", value: 80, monacoId: "wordWrapColumn" },
       { name: "Tab Width", type: "number", value: 2, monacoId: "tabSize" },
       {
+        name: "Bracket Pair Colorization",
+        description: "Highlight matching brackets",
+        type: "switch",
+        value: false,
+        monacoId: "guides"
+      },
+      {
         name: "Semi-colons",
         description: "Print semi-colons at the ends of statements",
         type: "switch",
@@ -116,13 +130,6 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
         // prettier: "singleQuote"
       },
       {
-        name: "Bracket Pair Colorization",
-        description: "Highlight matching brackets",
-        type: "switch",
-        value: false,
-        monacoId: "guides"
-      },
-      {
         name: "Arrow Parens",
         description: "Include parentheses around a sole arrow function parameter",
         value: "always",
@@ -136,12 +143,11 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
       },
     ]
   },
-  help: {
-    value: "help",
+  support: {
+    value: "support",
     options: [
-      { name: "Feedback", type: "button" },
-      { name: "Report a bug", type: "button" },
-      { name: "Keyboard shortcuts", type: "button" },
+      { name: "Feedback", type: "link", href: "https://github.com/felipetodev/log.js/issues/new" },
+      { name: "Report a bug", type: "link", href: "https://github.com/felipetodev/log.js/issues/new" },
     ]
   }
 }
