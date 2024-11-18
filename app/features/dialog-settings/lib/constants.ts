@@ -6,6 +6,7 @@ import {
   SettingsIcon,
   UserPenIcon
 } from "lucide-react";
+import { getMonacoOptions } from "./utils";
 import type { SettingsTab, SettingsTabData } from "~/lib/types";
 
 export const SETTINGS_TABS: { value: SettingsTab; icon: React.ComponentType<LucideProps>; name: string; disabled: boolean }[] = [
@@ -21,10 +22,9 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
   general: {
     value: "general",
     options: [
-      { name: "Wrap long lines", type: "switch", value: false },
-      { name: "Auto close brackets", type: "switch", value: true },
-      { name: "Show inline errors and warnings", type: "switch", value: true },
-      { name: "Show information on hover", type: "switch", value: true },
+      { name: "Wrap long lines", type: "switch", value: false, monacoId: "wordWrap" },
+      { name: "Auto close brackets", type: "switch", value: true, monacoId: "autoClosingBrackets" },
+      { name: "Show information on hover", type: "switch", value: true, monacoId: "hover" },
     ]
   },
   appearance: {
@@ -34,8 +34,12 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
         name: "Theme",
         type: "select",
         value: "dracula",
+        monacoId: "theme",
         values: [
           { value: "dracula", name: "Dracula" },
+          // { value: "vs-dark", name: "VS Dark" },
+          // { value: "vs-light", name: "VS Light" },
+          { value: "nightOwlTheme", name: "Night Owl" },
           { value: "one-dark-pro", name: "One Dark Pro", disabled: true },
           { value: "synthwave-84", name: "SynthWave '84", disabled: true },
           { value: "ayu", name: "Ayu", disabled: true },
@@ -44,34 +48,42 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
       {
         name: "Font",
         type: "select",
-        value: "fira-code",
+        value: "monospace",
+        monacoId: "fontFamily",
         values: [
-          { value: "fira-code", name: "Fira Code" },
           { value: "monospace", name: "Monospace" },
+          { value: "Monaco", name: "Monaco" },
+          { value: "Courier New", name: "Courier New" },
+          { value: "sans-serif", name: "Sans-serif" },
         ]
       },
       {
         name: "Font size",
+        monacoId: "fontSize",
         type: "number",
         value: 16
       },
       {
         name: "Show line numbers",
+        monacoId: "lineNumbers",
         type: "switch",
         value: true
       },
       {
         name: "Show invisible characters",
+        monacoId: "renderWhitespace",
         type: "switch",
         value: false
       },
       {
         name: "Highlight active line",
+        monacoId: "renderLineHighlight",
         type: "switch",
         value: true
       },
       {
         name: "Show minimap",
+        monacoId: "minimap",
         type: "switch",
         value: false
       },
@@ -85,11 +97,31 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
   formatting: {
     value: "formatting",
     options: [
-      { name: "Print Width", type: "number", value: 80 },
-      { name: "Tab Width", type: "number", value: 2 },
-      { name: "Semi-colons", description: "Print semi-colons at the ends of statements", type: "switch", value: true },
-      { name: "Single Quotes", description: "Use single quotes instead of double quotes", type: "switch", value: false },
-      { name: "Bracket Spacing", description: "Print spaces between brackets in object literals", type: "switch", value: true },
+      { name: "Print Width", type: "number", value: 80, monacoId: "wordWrapColumn" },
+      { name: "Tab Width", type: "number", value: 2, monacoId: "tabSize" },
+      {
+        name: "Semi-colons",
+        description: "Print semi-colons at the ends of statements",
+        type: "switch",
+        value: false,
+        disabled: true
+        // prettier: "semi"
+      },
+      {
+        name: "Single Quotes",
+        description: "Use single quotes instead of double quotes",
+        type: "switch",
+        value: false,
+        disabled: true
+        // prettier: "singleQuote"
+      },
+      {
+        name: "Bracket Pair Colorization",
+        description: "Highlight matching brackets",
+        type: "switch",
+        value: false,
+        monacoId: "guides"
+      },
       {
         name: "Arrow Parens",
         description: "Include parentheses around a sole arrow function parameter",
@@ -98,7 +130,9 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
         values: [
           { value: "always", name: "Always" },
           { value: "avoid", name: "Avoid" },
-        ]
+        ],
+        disabled: true
+        // prettier: "arrowParens"
       },
     ]
   },
@@ -111,3 +145,5 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
     ]
   }
 }
+
+export const DEFAULT_MONACO_OPTIONS = getMonacoOptions(SETTINGS_CONTENT)

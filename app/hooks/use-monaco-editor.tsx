@@ -7,7 +7,7 @@ import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
 import { useSettingsStore } from "~/store/settings";
 import { useTabs } from "~/hooks/use-tab";
-import { dracula } from "~/lib/themes/dracula";
+import * as themes from "~/lib/themes";
 import { transform } from "@babel/standalone";
 
 function babelTransform(code: string) {
@@ -34,6 +34,28 @@ export function useMonacoEditor() {
 
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
   const language = useSettingsStore(state => state.language);
+  const options = useSettingsStore(state => state.options);
+
+  useEffect(() => {
+    inputEditor.current?.updateOptions(options)
+    outputEditor.current?.updateOptions(options)
+  }, [options])
+
+  useEffect(() => {
+    if (!hasHydratedStorage) return;
+    import('monaco-editor').then((monaco) => {
+      const theme = options.theme as keyof typeof themes;
+      const themeData = themes[theme]
+
+      if (themeData) {
+        monaco.editor.defineTheme(theme, themeData);
+        monaco.editor.setTheme(theme);
+
+        document.body.style.backgroundColor = themeData.colors['editor.background'] + "b0";
+        document.body.style.setProperty('--border-color', themeData.colors['scrollbarSlider.background'] ?? "#282A36")
+      }
+    });
+  }, [hasHydratedStorage, options.theme])
 
   useEffect(() => {
     if (!window.MonacoEnvironment) {
@@ -63,18 +85,15 @@ export function useMonacoEditor() {
   useEffect(() => {
     if (inputEditorContainer.current && !inputEditor.current && hasHydratedStorage) {
       import('monaco-editor').then((monaco) => {
-        monaco.editor.defineTheme('dracula', dracula);
+        const theme = options.theme as keyof typeof themes;
+        const themeData = themes[theme]
+        if (themeData) monaco.editor.defineTheme(theme, themeData);
         inputEditor.current = monaco.editor.create(inputEditorContainer.current!, {
           value: activeTab.code,
           language,
-          theme: 'dracula',
-          tabSize: 2,
-          fontSize: 16,
           detectIndentation: true,
           automaticLayout: true,
-          minimap: {
-            enabled: false
-          }
+          ...options
         });
       });
     }
@@ -84,14 +103,9 @@ export function useMonacoEditor() {
         outputEditor.current = monaco.editor.create(outputEditorContainer.current!, {
           value: '',
           language,
-          theme: 'dracula',
-          tabSize: 2,
-          fontSize: 16,
           readOnly: true,
           automaticLayout: true,
-          minimap: {
-            enabled: false
-          }
+          ...options
         });
       });
     }
@@ -110,18 +124,18 @@ export function useMonacoEditor() {
 
     try {
       const transformedCode = babelTransform(codeToExecute);
-  
+
       const loader = setTimeout(() => {
         setIsLoading(true);
         setOutput('Executing... ⏳');
       }, 1000);
-  
+
       const timeout = setTimeout(() => {
         worker.terminate();
         setOutput('Execution timed out.');
         setIsLoading(false);
       }, 20000);
-  
+
       worker.onmessage = (event) => {
         clearTimeout(timeout);
         clearTimeout(loader);
@@ -129,7 +143,7 @@ export function useMonacoEditor() {
         setIsLoading(false);
         worker.terminate();
       };
-  
+
       worker.postMessage({ code: transformedCode });
     } catch (error) {
       if (error instanceof Error) {

@@ -1,3 +1,5 @@
+import type { editor } from "monaco-editor";
+
 export interface Tab {
   id: string;
   name: string;
@@ -13,11 +15,35 @@ type SelectOption<T> = {
   disabled?: boolean;
 };
 
+export type MonacoOptions = editor.IEditorOptions & editor.IGlobalEditorOptions
+
+export type OptionChangeParams<T> = {
+  key: string
+  value: T
+  option: SettingsTab
+  monacoId?: keyof MonacoOptions
+}
+
 export type SettingsOption<T> =
-  | { name: string; description?: string; type: 'switch'; value: boolean }
-  | { name: string; type: 'number'; value: T }
+  | {
+    name: string;
+    description?: string;
+    type: 'switch';
+    value: boolean;
+    monacoId?: keyof MonacoOptions;
+    disabled?: boolean;
+  }
+  | { name: string; type: 'number'; value: T; monacoId?: keyof MonacoOptions }
   | { name: string; type: 'button' }
-  | { name: string; description?: string; type: 'select'; value: T; values: SelectOption<string>[] };
+  | {
+    name: string;
+    description?: string;
+    type: 'select';
+    value: T;
+    values: SelectOption<string>[];
+    monacoId?: keyof MonacoOptions;
+    disabled?: boolean;
+  };
 
 export type SettingsTabData = {
   value: string;

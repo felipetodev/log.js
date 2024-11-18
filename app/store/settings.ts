@@ -1,24 +1,25 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { SETTINGS_CONTENT } from '~/features/dialog-settings/lib/constants';
-import { type SettingsTab } from '~/lib/types';
+import { DEFAULT_MONACO_OPTIONS, SETTINGS_CONTENT } from '~/features/dialog-settings/lib/constants';
+import { parseMonacoValues } from '~/features/dialog-settings/lib/utils';
+import { type MonacoOptions, type OptionChangeParams } from '~/lib/types';
 
 interface SettingsState {
-  _hasHydrated: boolean;
   form: typeof SETTINGS_CONTENT;
+  options: MonacoOptions;
   language: 'typescript' | 'javascript';
   setLanguage: (language: SettingsState['language']) => void;
-  setForm: <T, >({ key, value, option }: { key: string, value: T, option: SettingsTab }) => void;
+  setForm: <T, >(params: OptionChangeParams<T>) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(persist((set) => ({
-  _hasHydrated: false,
+  options: DEFAULT_MONACO_OPTIONS,
   form: SETTINGS_CONTENT,
   language: 'typescript',
 
   setLanguage: (language: SettingsState['language']) => set({ language }),
 
-  setForm: ({ key, value, option }) => set((state) => {
+  setForm: ({ key, value, option, monacoId }) => set((state) => {
     const updatedForm = {
       ...state.form,
       [option]: {
@@ -32,15 +33,19 @@ export const useSettingsStore = create<SettingsState>()(persist((set) => ({
       },
     }
 
-    return { form: updatedForm }
+    return {
+      form: updatedForm,
+      options: {
+        ...state.options,
+        ...(monacoId ? {
+          // @ts-expect-error TODO: type this correctly 👀
+          [monacoId]: parseMonacoValues[monacoId] ? parseMonacoValues[monacoId](value) : value,
+        } : {}),
+      },
+    }
   })
 }),
   {
-    name: 'tabs-storage',
-    onRehydrateStorage: () => (state) => {
-      if (state) {
-        state._hasHydrated = true
-      }
-    },
+    name: 'settings-storage',
   }
 ));
