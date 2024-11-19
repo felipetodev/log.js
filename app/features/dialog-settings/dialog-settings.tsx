@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/ui/dialog";
 
 export function DialogSettings({ children }: { children: React.ReactNode }) {
@@ -14,7 +13,7 @@ export function DialogSettings({ children }: { children: React.ReactNode }) {
       'modal': parseAsBoolean.withDefault(false),
       'option': parseAsString.withDefault('')
     },
-    parseAsBoolean.withDefault(false).withOptions({ shallow: false })
+    parseAsBoolean.withDefault(false)
   );
 
   return (
@@ -28,9 +27,9 @@ export function DialogSettings({ children }: { children: React.ReactNode }) {
         }
       }}
     >
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      {/* <DialogTrigger asChild> */}
+      {children}
+      {/* </DialogTrigger> */}
       <DialogContent className="md:max-w-[680px]">
         <DialogHeader>
           <DialogTitle>

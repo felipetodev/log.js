@@ -1,13 +1,5 @@
 import { MonacoOptions, SettingsTab, SettingsTabData } from "~/lib/types"
 
-/*
-  {
-    "minimap": { "enabled": true },
-    "guides": { "bracketPairs": true },
-    "hidden": { "enabled": false }
-  }
-*/
-
 export const parseMonacoValues = {
   hidden: (value: boolean) => ({ enabled: value }),
   guides: (value: boolean) => ({ bracketPairs: value }),
