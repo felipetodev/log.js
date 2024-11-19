@@ -11,6 +11,7 @@ import { NuqsAdapter } from "nuqs/adapters/remix";
 import { useSWEffect } from '@remix-pwa/sw'
 
 import "./tailwind.css";
+import { HotKeys } from "~/components/hot-keys";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -82,6 +83,7 @@ export default function App() {
   return (
     <NuqsAdapter>
       <Outlet />
+      <HotKeys />
     </NuqsAdapter>
   );
 }

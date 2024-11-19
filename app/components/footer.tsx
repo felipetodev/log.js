@@ -1,5 +1,12 @@
 import { SettingsIcon } from "lucide-react";
+import { DialogTrigger } from "~/ui/dialog";
 import { DialogSettings } from "~/features/dialog-settings/dialog-settings";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/ui/tooltip";
 
 export function Footer() {
   return (
@@ -10,9 +17,25 @@ export function Footer() {
       className="relative flex items-center overflow-hidden w-full h-6 text-xs text-white border-t border-neutral-700"
     >
       <DialogSettings>
-        <button className="absolute bg-[#4e78cc] h-full px-4 transition-opacity hover:opacity-70 outline-none">
-          <SettingsIcon className="size-3.5 inline" />
-        </button>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <DialogTrigger asChild>
+              <TooltipTrigger asChild>
+                <button className="absolute bg-[#4e78cc] h-full px-4 transition-opacity hover:opacity-70 outline-none">
+                  <SettingsIcon className="size-3.5 inline" />
+                </button>
+              </TooltipTrigger>
+            </DialogTrigger>
+            <TooltipContent className="bg-[var(--border-color)] border border-neutral-500 px-1.5">
+              <div className="flex items-center space-x-2">
+                <kbd className="pointer-events-none h-5 select-none items-center gap-1 rounded border px-1 text-[10px] font-medium flex bg-[#2C2C2C]">
+                  <span className="text-[14px]">⌘</span>.
+                </kbd>
+                <span className="text-[10px]">Settings</span>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </DialogSettings>
       <div className="flex items-center space-x-2 mx-auto">
         <h4>

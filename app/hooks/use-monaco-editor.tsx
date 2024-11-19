@@ -7,6 +7,7 @@ import CodeExecutionWorker from '~/lib/worker/code-execution?worker';
 import debounce from "just-debounce-it";
 import { useTabsStore } from "~/store/tabs";
 import { useSettingsStore } from "~/store/settings";
+import { useMonacoHotkeys } from "./use-monaco-hotkeys";
 import { useTabs } from "~/hooks/use-tab";
 import * as themes from "~/lib/themes";
 import { transform } from "@babel/standalone";
@@ -26,6 +27,7 @@ function babelTransform(code: string) {
 
 export function useMonacoEditor() {
   const { activeTab, setCode } = useTabs()
+  const { loadHotkeys } = useMonacoHotkeys()
   const [isLoading, setIsLoading] = useState(true)
   const [output, setOutput] = useState<string>('')
   const inputEditor = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -96,6 +98,7 @@ export function useMonacoEditor() {
           automaticLayout: true,
           ...options
         });
+        loadHotkeys(inputEditor.current, monaco);
       });
     }
 
@@ -108,6 +111,7 @@ export function useMonacoEditor() {
           automaticLayout: true,
           ...options
         });
+        loadHotkeys(outputEditor.current, monaco);
       });
     }
 
