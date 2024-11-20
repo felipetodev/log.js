@@ -18,7 +18,6 @@ import { InputNumber } from "~/ui/input-number"
 import { useSettingsStore } from "~/store/settings"
 import { SETTINGS_TABS } from "../lib/constants"
 import type {
-  OptionChangeParams,
   SettingsOption,
   SettingsTab
 } from "~/lib/types";
@@ -28,10 +27,6 @@ export function DialogActions() {
   const options = useSettingsStore((state) => state.form)
   const setOptions = useSettingsStore((state) => state.setForm)
 
-  const onOptionChange = <T,>({ key, value, option, monacoId }: OptionChangeParams<T>) => {
-    setOptions({ key, value, option, monacoId })
-  }
-
   const renderOption = useCallback((option: SettingsOption<number | string>, optionType: SettingsTab) => {
     switch (option.type) {
       case "switch":
@@ -40,7 +35,7 @@ export function DialogActions() {
             checked={option.value}
             disabled={option.disabled}
             onCheckedChange={(check) => {
-              onOptionChange({ key: option.name, value: check, option: optionType, monacoId: option.monacoId })
+              setOptions({ key: option.name, value: check, option: optionType, monacoId: option.monacoId })
             }}
           />
         )
@@ -50,7 +45,7 @@ export function DialogActions() {
             aria-label={option.name}
             defaultValue={Number(option.value)}
             onChange={(num) => {
-              onOptionChange({ key: option.name, value: num, option: optionType, monacoId: option.monacoId })
+              setOptions({ key: option.name, value: num, option: optionType, monacoId: option.monacoId })
             }}
           />
         )
@@ -58,7 +53,7 @@ export function DialogActions() {
         return (
           <Select
             defaultValue={String(option.value)}
-            onValueChange={(value) => onOptionChange({ key: option.name, value, option: optionType, monacoId: option.monacoId })}
+            onValueChange={(value) => setOptions({ key: option.name, value, option: optionType, monacoId: option.monacoId })}
             disabled={option.disabled}
           >
             <SelectTrigger id="select-place" className="max-w-[208px]">

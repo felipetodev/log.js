@@ -1,4 +1,4 @@
-import { MonacoOptions, SettingsTab, SettingsTabData } from "~/lib/types"
+import type { MonacoOptions, SettingsTab, SettingsTabData } from "~/lib/types"
 
 export const parseMonacoValues = {
   hidden: (value: boolean) => ({ enabled: value }),
@@ -7,26 +7,16 @@ export const parseMonacoValues = {
   hover: (value: boolean) => ({ enabled: value }),
 } as const
 
-export function getMonacoOptions(formData: Record<SettingsTab, SettingsTabData>) {
-  const options: MonacoOptions = {}
+export function getMonacoOptions(optionsData: Record<SettingsTab, SettingsTabData>) {
+  return Object.values(optionsData).reduce((acc, { options }) => {
+    // @ts-expect-error TODO: type this correctly 👀
+    options.forEach(({ monacoId, value }) => {
+      if (monacoId) {
+        // @ts-expect-error TODO: type this correctly 👀
+        acc[monacoId] = parseMonacoValues[monacoId]?.(value) ?? value
+      }
+    })
 
-  for (const settings of Object.values(formData)) {
-    if (settings.options.length > 0) {
-      settings.options.forEach(opt => {
-        if ('monacoId' in opt && opt.monacoId) {
-          const monacoId = opt.monacoId
-          // @ts-expect-error TODO: type this correctly
-          if (parseMonacoValues[monacoId]) {
-            // @ts-expect-error TODO: type this correctly
-            options[monacoId] = parseMonacoValues[monacoId](opt.value)
-          } else {
-            // @ts-expect-error TODO: type this correctly
-            options[monacoId] = opt.value
-          }
-        }
-      })
-    }
-  }
-
-  return options
+    return acc
+  }, {} as MonacoOptions)
 }
