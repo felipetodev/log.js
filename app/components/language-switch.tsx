@@ -1,8 +1,8 @@
-import { useTabsStore } from "~/store/tabs";
+import { useSettingsStore } from "~/store/settings";
 
 export function LanguageSwitch() {
-  const setLanguage = useTabsStore(state => state.setLanguage);
-  const language = useTabsStore(state => state.language);
+  const setLanguage = useSettingsStore(state => state.setLanguage);
+  const language = useSettingsStore(state => state.language);
 
   const isJavaScript = language === 'javascript'
   return (
