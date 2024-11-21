@@ -1,5 +1,6 @@
 import {
   type LucideProps,
+  Code,
   BotIcon,
   BracesIcon,
   CircleHelpIcon,
@@ -9,11 +10,17 @@ import {
 import { getMonacoOptions } from "./utils";
 import type { SettingsTab, SettingsTabData } from "~/lib/types";
 
-export const SETTINGS_TABS: { value: SettingsTab; icon: React.ComponentType<LucideProps>; name: string; disabled: boolean }[] = [
+export const SETTINGS_TABS: {
+  value: SettingsTab;
+  icon: React.ComponentType<LucideProps>;
+  name: string;
+  disabled: boolean
+}[] = [
   { value: "general", icon: SettingsIcon, name: "General", disabled: false },
   { value: "appearance", icon: UserPenIcon, name: "Appearance", disabled: false },
   { value: "formatting", icon: BracesIcon, name: "Formatting", disabled: false },
   { value: "support", icon: CircleHelpIcon, name: "Support", disabled: false },
+  { value: "resources", icon: Code, name: "Resources", disabled: false },
   { value: "ai", icon: BotIcon, name: "AI", disabled: true },
 ] as const
 
@@ -143,13 +150,36 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
       },
     ]
   },
+  resources: {
+    value: "resources",
+    options: [
+      {
+        name: "Advent.js",
+        description: "JavaScript coding challenges every day of December. Learn and have fun with adventJS coding challenges!",
+        type: "link",
+        href: "https://adventjs.dev/"
+      },
+      {
+        name: "Advent of Code",
+        description: "Advent of Code is an Advent calendar of small programming puzzles for a variety of skill sets and skill levels.",
+        type: "link",
+        href: "https://adventofcode.com/"
+      },
+      {
+        name: "TypeHero",
+        description: "Level up and learn TypeScript with interactive exercises.",
+        type: "link",
+        href: "https://typehero.dev/"
+      }
+    ]
+  },
   support: {
     value: "support",
     options: [
       { name: "Feedback", type: "link", href: "https://github.com/felipetodev/log.js/issues/new" },
       { name: "Report a bug", type: "link", href: "https://github.com/felipetodev/log.js/issues/new" },
     ]
-  }
+  },
 }
 
 export const DEFAULT_MONACO_OPTIONS = getMonacoOptions(SETTINGS_CONTENT)

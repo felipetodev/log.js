@@ -9,7 +9,7 @@ interface SettingsState {
   options: MonacoOptions;
   language: 'typescript' | 'javascript';
   setLanguage: (language: SettingsState['language']) => void;
-  setForm: <T, >(params: OptionChangeParams<T>) => void;
+  setForm: <T>(params: OptionChangeParams<T>) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(persist((set) => ({
@@ -38,8 +38,9 @@ export const useSettingsStore = create<SettingsState>()(persist((set) => ({
       options: {
         ...state.options,
         ...(monacoId ? {
-          // @ts-expect-error TODO: type this correctly 👀
-          [monacoId]: parseMonacoValues[monacoId] ? parseMonacoValues[monacoId](value) : value,
+          [monacoId]: monacoId in parseMonacoValues
+            ? parseMonacoValues[monacoId as keyof typeof parseMonacoValues](value as boolean)
+            : value,
         } : {}),
       },
     }

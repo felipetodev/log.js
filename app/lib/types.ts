@@ -7,7 +7,7 @@ export interface Tab {
   createdAt: Date;
 }
 
-export type SettingsTab = 'general' | 'appearance' | 'formatting' | 'support' | 'ai';
+export type SettingsTab = 'general' | 'appearance' | 'formatting' | 'support' | 'resources' | 'ai';
 
 type SelectOption<T> = {
   value: T;
@@ -35,7 +35,7 @@ export type SettingsOption<T> =
   }
   | { name: string; type: 'number'; value: T; monacoId?: keyof MonacoOptions }
   | { name: string; type: 'button', disabled?: boolean }
-  | { name: string; type: 'link'; href: string }
+  | { name: string; type: 'link'; description?: string; href: string }
   | {
     name: string;
     description?: string;
