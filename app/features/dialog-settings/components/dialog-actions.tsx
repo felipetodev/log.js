@@ -1,82 +1,18 @@
-import { useCallback } from "react"
-import { Switch } from "~/ui/switch"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger
-} from "~/ui/tabs"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/ui/select"
+} from "~/ui/tabs";
 import { useQueryState } from "nuqs";
-import { InputNumber } from "~/ui/input-number"
-import { useSettingsStore } from "~/store/settings"
-import { SETTINGS_TABS } from "../lib/constants"
-import type {
-  SettingsOption,
-  SettingsTab
-} from "~/lib/types";
+import { SettingOptions } from "./setting-options";
+import { useSettingsStore } from "~/store/settings";
+import { SETTINGS_TABS } from "../lib/constants";
 
 export function DialogActions() {
   const [tab, setTab] = useQueryState('option', { defaultValue: 'general' });
   const options = useSettingsStore((state) => state.form)
   const setOptions = useSettingsStore((state) => state.setForm)
-
-  const renderOption = useCallback((option: SettingsOption<number | string>, optionType: SettingsTab) => {
-    switch (option.type) {
-      case "switch":
-        return (
-          <Switch
-            checked={option.value}
-            disabled={option.disabled}
-            onCheckedChange={(check) => {
-              setOptions({ key: option.name, value: check, option: optionType, monacoId: option.monacoId })
-            }}
-          />
-        )
-      case "number":
-        return (
-          <InputNumber
-            aria-label={option.name}
-            defaultValue={Number(option.value)}
-            onChange={(num) => {
-              setOptions({ key: option.name, value: num, option: optionType, monacoId: option.monacoId })
-            }}
-          />
-        )
-      case "select":
-        return (
-          <Select
-            defaultValue={String(option.value)}
-            onValueChange={(value) => setOptions({ key: option.name, value, option: optionType, monacoId: option.monacoId })}
-            disabled={option.disabled}
-          >
-            <SelectTrigger id="select-place" className="max-w-[208px]">
-              <SelectValue placeholder={`Select ${option.name}`} id="select-place" />
-            </SelectTrigger>
-            <SelectContent>
-              {option.values.map((option) => (
-                <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
-                  {option.name}
-                </SelectItem>
-              ))
-              }
-            </SelectContent>
-          </Select>
-        )
-      case "link":
-        return (
-          <a className="border rounded-md px-2 py-1.5 transition-colors hover:bg-neutral-100" href={option.href} target="_blank" rel="noopener noreferrer" aria-label={option.name}>
-            {option.name}
-          </a>
-        )
-    }
-  }, [])
 
   return (
     <Tabs
@@ -105,13 +41,23 @@ export function DialogActions() {
       </TabsList>
 
       {
-        SETTINGS_TABS.map(({ value }) => (
-          <TabsContent key={value} value={value}>
+        SETTINGS_TABS.map(({ value: tabValue }) => (
+          <TabsContent key={tabValue} value={tabValue}>
             <div className="flex flex-col gap-3 px-4 pb-6 text-sm text-token-text-primary sm:px-6 md:ps-0 md:pt-5">
-              {options[value].options.map((option) => (
+              {options[tabValue].options.map((option) => (
                 <div key={option.name} className="flex justify-between items-center border-b pb-3 last-of-type:border-b-0">
                   {option.type !== 'button' && option.type !== 'link' && <span>{option.name}</span>}
-                  {renderOption(option, value)}
+                  <SettingOptions
+                    option={option}
+                    onUpdate={(value) => {
+                      setOptions({
+                        key: option.name,
+                        option: tabValue,
+                        value,
+                        monacoId: 'monacoId' in option ? option.monacoId : undefined
+                      })
+                    }}
+                  />
                 </div>
               ))}
             </div>
