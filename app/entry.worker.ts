@@ -14,7 +14,7 @@ export {};
 
 declare let self: ServiceWorkerGlobalScope;
 
-const version = 'v7';
+const version = 'v8';
 
 const DOCUMENT_CACHE_NAME = `document-cache`;
 const ASSET_CACHE_NAME = `asset-cache`;
@@ -52,7 +52,7 @@ const assetCache = new EnhancedCache(ASSET_CACHE_NAME, {
   version,
   strategy: 'CacheFirst',
   strategyOptions: {
-    maxAgeSeconds: 60 * 60 * 24 * 90, // 90 days
+    maxAgeSeconds: 3_600 * 24,
     maxEntries: 100,
   }
 })

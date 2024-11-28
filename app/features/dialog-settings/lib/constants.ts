@@ -32,6 +32,12 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
       { name: "Wrap long lines", type: "switch", value: false, monacoId: "wordWrap" },
       { name: "Auto close brackets", type: "switch", value: true, monacoId: "autoClosingBrackets" },
       { name: "Show information on hover", type: "switch", value: true, monacoId: "hover" },
+      {
+        name: "Show minimap",
+        monacoId: "minimap",
+        type: "switch",
+        value: false
+      },
     ]
   },
   appearance: {
@@ -47,7 +53,9 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
           // { value: "vs-dark", name: "VS Dark" },
           // { value: "vs-light", name: "VS Light" },
           { value: "nightOwlTheme", name: "Night Owl" },
-          { value: "one-dark-pro", name: "One Dark Pro", disabled: true },
+          { value: "oneDarkPro", name: "One Dark Pro", disabled: false },
+          { value: "moonlight", name: "Moonlight", disabled: false },
+          { value: "moonlightII", name: "Moonlight II", disabled: false },
           { value: "synthwave-84", name: "SynthWave '84", disabled: true },
           { value: "ayu", name: "Ayu", disabled: true },
         ]
@@ -96,11 +104,22 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
         value: true
       },
       {
-        name: "Show minimap",
-        monacoId: "minimap",
-        type: "switch",
-        value: false
+        name: "Cursor blinking",
+        monacoId: "cursorBlinking",
+        type: "select",
+        value: "blink",
+        values: [
+          { value: "blink", name: "Blink" },
+          { value: "expand", name: "Expand" },
+          { value: "solid", name: "Solid" }
+        ]
       },
+      {
+        name: "Cursor width",
+        monacoId: "cursorWidth",
+        type: "number",
+        value: 2
+      }
       // {
       //   name: "Show activity bar",
       //   type: "switch",
