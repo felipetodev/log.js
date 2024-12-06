@@ -5,6 +5,7 @@ export interface Tab {
   name: string;
   code: string;
   createdAt: Date;
+  hasRealName?: boolean;
 }
 
 export type SettingsTab = 'general' | 'appearance' | 'formatting' | 'support' | 'resources' | 'ai';

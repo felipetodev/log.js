@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { XIcon } from "lucide-react";
 import { useMonacoEditor } from "~/hooks/use-monaco-editor";
-import { useTabs } from "~/hooks/use-tab";
+import { useTabEditing, useTabs } from "~/hooks/use-tab";
 import type { Tab } from "~/lib/types";
 
 interface TabProps {
@@ -11,14 +11,33 @@ interface TabProps {
 export function Tab({ tab }: TabProps) {
   const { isLoading } = useMonacoEditor();
   const { tabs, activeTab, deleteTab, setActiveTab } = useTabs()
+  const { handleEdit, handleRename, inputRef, isEditing, setTabName, tabName } = useTabEditing(tab);
 
   return (
     <Fragment>
       {tab.id === activeTab.id ? (
         <div className="flex items-center justify-between text-white bg-[var(--border-color)] pl-4 pr-1 w-40 rounded-t-lg ml-[3px] mt-auto h-[calc(100%-2px)] border-x border-t border-neutral-700">
-          <span className="text-sm font-semibold truncate">
-            {tab.name}
-          </span>
+          {
+            isEditing ? (
+              <div className="relative w-full bg-white/10 after:bg-blue-400 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-center after:transform after:scale-x-0 after:transition-transform after:duration-150 focus-within:after:scale-x-100">
+                <input
+                  ref={inputRef}
+                  value={tabName}
+                  onChange={(e) => setTabName(e.target.value)}
+                  onBlur={handleRename}
+                  onKeyDown={(e) => e.key === "Enter" && handleRename()}
+                  className="text-sm bg-transparent outline-none text-center w-full"
+                />
+              </div>
+            ) : (
+              <button
+                onClick={handleEdit}
+                className="text-sm truncate w-full"
+              >
+                {tab.name}
+              </button>
+            )
+          }
           {tabs.length > 1 && (
             <button
               className="ml-0.5 hover:bg-neutral-500/10 p-[3px] rounded-md border border-transparent hover:border-neutral-700"
