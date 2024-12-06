@@ -10,6 +10,7 @@ interface TabsState {
   setActiveTab: (tab: Tab) => void;
   setCode: (code: Tab['code']) => void;
   deleteTab: (id: Tab['id']) => void;
+  updateTab: (id: Tab['id'], tab: Partial<Omit<Tab, 'id'>>) => void;
 }
 
 const DEFAULT_TAB: Tab = {
@@ -32,7 +33,7 @@ export const useTabsStore = create<TabsState>()(persist((set) => ({
       if (tab.id === activeTab.id) {
         return {
           ...tab,
-          name: code.trim() ? `${code.trim().slice(0, 20)}...` : tab.name,
+          name: !tab.hasRealName && code.trim() ? `${code.trim().slice(0, 20)}...` : tab.name,
           code,
         };
       }
@@ -72,6 +73,24 @@ export const useTabsStore = create<TabsState>()(persist((set) => ({
     return {
       tabs: updatedTabs,
       activeTab,
+    }
+  }),
+
+  updateTab: (id: Tab['id'], tab: Partial<Omit<Tab, 'id'>>) => set((state) => {
+    const { tabs } = state;
+
+    const index = tabs.findIndex(t => t.id === id);
+    const oldTab = tabs[index];
+    const updatedTab = { ...oldTab, ...tab, hasRealName: Boolean(oldTab.hasRealName || (oldTab.name !== tab.name)) };
+    const updatedTabs = [
+      ...tabs.slice(0, index),
+      updatedTab,
+      ...tabs.slice(index + 1),
+    ]
+
+    return {
+      tabs: updatedTabs,
+      activeTab: updatedTab,
     }
   })
 }),
