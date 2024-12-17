@@ -14,7 +14,7 @@ export {};
 
 declare let self: ServiceWorkerGlobalScope;
 
-const version = 'v8';
+const version = 'v9';
 
 const DOCUMENT_CACHE_NAME = `document-cache`;
 const ASSET_CACHE_NAME = `asset-cache`;

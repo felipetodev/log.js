@@ -63,6 +63,19 @@ export default {
 					'4': 'hsl(var(--chart-4))',
 					'5': 'hsl(var(--chart-5))'
 				}
+			},
+			animation: {
+				"background-shine": "background-shine 2s linear infinite"
+			},
+			keyframes: {
+				"background-shine": {
+					from: {
+						"backgroundPosition": "0 0"
+					},
+					to: {
+						"backgroundPosition": "-200% 0"
+					}
+				}
 			}
 		}
 	},
