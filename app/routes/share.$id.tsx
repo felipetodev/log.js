@@ -3,6 +3,13 @@ import { Footer } from "~/components/footer";
 import { PlaygroundPreview } from "~/components/playground-preview";
 import { useShareCode } from "~/hooks/use-share-code";
 import { GitForkIcon, LinkIcon } from "lucide-react";
+import type { MetaFunction } from "@remix-run/node";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Share | log.js 🧪" },
+  ];
+};
 
 export function loader({ params }: { params: { id: string } }) {
   return params
