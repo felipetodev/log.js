@@ -33,6 +33,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "isbot": "^4.1.0",
+    "js-base64": "^3.7.7",
     "just-debounce-it": "^3.2.0",
     "lucide-react": "^0.453.0",
     "monaco-editor": "^0.52.0",
