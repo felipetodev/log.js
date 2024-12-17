@@ -6,7 +6,7 @@ interface TabsState {
   _hasHydrated: boolean;
   tabs: Tab[];
   activeTab: Tab;
-  createNewTab: () => void;
+  createNewTab: (code?: Tab['code']) => void;
   setActiveTab: (tab: Tab) => void;
   setCode: (code: Tab['code']) => void;
   deleteTab: (id: Tab['id']) => void;
@@ -48,14 +48,21 @@ export const useTabsStore = create<TabsState>()(persist((set) => ({
     }
   }),
 
-  createNewTab: () => set((state) => {
+  createNewTab: (shareCode?: string) => set((state) => {
     const { tabs } = state;
-    const newTab: Tab = {
-      id: crypto.randomUUID(),
-      name: `Tab ${tabs.length + 1}`,
-      code: '',
-      createdAt: new Date(),
-    };
+
+    const newTab: Tab = shareCode
+      ? {
+        id: crypto.randomUUID(),
+        name: `${shareCode.trim().slice(0, 20)}...`,
+        code: shareCode,
+        createdAt: new Date(),
+      } : {
+        id: crypto.randomUUID(),
+        name: `Tab ${tabs.length + 1}`,
+        code: '',
+        createdAt: new Date(),
+      };
 
     return {
       activeTab: newTab,
