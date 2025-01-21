@@ -1,5 +1,5 @@
-import { type LoaderFunctionArgs, MetaFunction } from '@remix-run/node'
-import { json, useLoaderData } from "@remix-run/react";
+import { type LoaderFunctionArgs, MetaFunction, data, redirect } from '@remix-run/node'
+import { useLoaderData } from "@remix-run/react";
 import { Footer } from "~/components/footer";
 import { PlaygroundPreview } from "~/components/playground-preview";
 import { useShareCode } from "~/hooks/use-share-code";
@@ -54,13 +54,13 @@ export async function loader({ request, params }: LoaderArgs) {
     })
   }
 
-  return json(shareCode.data, {
+  return data(shareCode.data, {
     headers
   })
 }
 
 export default function Share() {
-  const { code } = useLoaderData<typeof loader>()
+  const { code } = useLoaderData<{ code: string }>()
   const { forkCode } = useShareCode()
 
   return (

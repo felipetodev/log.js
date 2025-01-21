@@ -1,9 +1,9 @@
 import type { WebAppManifest } from '@remix-pwa/dev';
-import { json } from '@remix-run/node';
+import { data } from '@remix-run/node';
 
 
 export const loader = () => {
-  return json(
+  return data(
     {
       short_name: "log.js 🧪",
       name: "log.js 🧪",
