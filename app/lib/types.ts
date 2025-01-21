@@ -50,3 +50,7 @@ export type SettingsTabData = {
   value: string;
   options: SettingsOption<number | string>[];
 };
+
+export enum SchemaTable {
+  Shares = 'shares'
+}

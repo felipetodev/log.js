@@ -1,25 +1,35 @@
 import { useTabs } from "~/hooks/use-tab";
-import { encode, decode } from 'js-base64';
+import { supabase } from "~/lib/supabase-client";
+import { SchemaTable } from "~/lib/types";
+import { toast } from 'sonner';
 
 export function useShareCode() {
   const { activeTab, createNewTab } = useTabs()
 
-  const shareCode = () => {
-    const hashedCode = encode(activeTab.code)
+  const shareCode = async () => {
+    const { id, code } = activeTab
 
-    navigator.clipboard.writeText(
-      `${window.location.origin}/share/${hashedCode}`
-    )
+    const { status } = await supabase
+      .from(SchemaTable.Shares)
+      .upsert({ id, code })
+
+    if (status === 200 || status === 201) {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/share/${id}`
+      )
+      toast.success('Share code copied to clipboard')
+    } else {
+      toast.error('Failed to share code')
+    }
   }
 
-  const decodeCode = (code: string) => {
-    return decode(code)
-  }
-
-  const forkCode = (code: string) => {
+  const forkCode = async (code: string) => {
     createNewTab(code)
+    toast.success('Code forked')
+    await new Promise(resolve => setTimeout(resolve, 700))
+
     window.location.pathname = '/'
   }
 
-  return { shareCode, decodeCode, forkCode }
+  return { shareCode, forkCode }
 }

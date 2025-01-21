@@ -1,9 +1,15 @@
-import { useLoaderData } from "@remix-run/react";
+import { type LoaderFunctionArgs, MetaFunction } from '@remix-run/node'
+import { json, useLoaderData } from "@remix-run/react";
 import { Footer } from "~/components/footer";
 import { PlaygroundPreview } from "~/components/playground-preview";
 import { useShareCode } from "~/hooks/use-share-code";
 import { GitForkIcon, LinkIcon } from "lucide-react";
-import type { MetaFunction } from "@remix-run/node";
+import { SchemaTable } from '~/lib/types';
+import {
+  createServerClient,
+  parseCookieHeader,
+  serializeCookieHeader
+} from "@supabase/ssr";
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,14 +17,51 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export function loader({ params }: { params: { id: string } }) {
-  return params
+type LoaderArgs = LoaderFunctionArgs & { params: { id: string } }
+
+export async function loader({ request, params }: LoaderArgs) {
+  const headers = new Headers()
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return parseCookieHeader(request.headers.get("Cookie") ?? "");
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            return headers.append("Set-Cookie", serializeCookieHeader(name, value, options));
+          })
+        }
+      }
+    }
+  )
+
+  const shareCode = await supabase
+    .from(SchemaTable.Shares)
+    .select()
+    .eq('id', params.id)
+    .single()
+
+  if (!shareCode.data || shareCode.status >= 400) {
+    // add trasanctional logging
+    console.error(shareCode.error?.message)
+
+    throw new Response(null, {
+      status: 404,
+      statusText: "Not Found",
+    })
+  }
+
+  return json(shareCode.data, {
+    headers
+  })
 }
 
 export default function Share() {
-  const { id } = useLoaderData<typeof loader>()
-  const { forkCode, decodeCode } = useShareCode()
-  const code = decodeCode(id)
+  const { code } = useLoaderData<typeof loader>()
+  const { forkCode } = useShareCode()
 
   return (
     <main className="relative h-screen w-screen">
