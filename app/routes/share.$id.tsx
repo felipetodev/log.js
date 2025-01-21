@@ -5,6 +5,7 @@ import { PlaygroundPreview } from "~/components/playground-preview";
 import { useShareCode } from "~/hooks/use-share-code";
 import { GitForkIcon, LinkIcon } from "lucide-react";
 import { SchemaTable } from '~/lib/types';
+import { FEATURE_FLAGS } from '~/lib/feature-flags';
 import {
   createServerClient,
   parseCookieHeader,
@@ -20,6 +21,9 @@ export const meta: MetaFunction = () => {
 type LoaderArgs = LoaderFunctionArgs & { params: { id: string } }
 
 export async function loader({ request, params }: LoaderArgs) {
+  if (!FEATURE_FLAGS.SHARE_CODE) {
+    return redirect("/");
+  }
   const headers = new Headers()
   const supabase = createServerClient(
     process.env.SUPABASE_URL!,

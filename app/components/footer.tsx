@@ -9,11 +9,13 @@ import {
   TooltipTrigger,
 } from "~/ui/tooltip";
 import { useShareCode } from "~/hooks/use-share-code";
+import { FEATURE_FLAGS } from "~/lib/feature-flags";
 
 export function Footer({ isPreview }: { isPreview?: boolean }) {
   // ship fast, refactor later lol
   const [copyClipboard, setCopyClipboard] = useState(false)
   const { shareCode } = useShareCode()
+  const isShareCodeEnabled = FEATURE_FLAGS.SHARE_CODE
 
   const onCopy = () => {
     shareCode()
@@ -50,7 +52,7 @@ export function Footer({ isPreview }: { isPreview?: boolean }) {
             </Tooltip>
           </TooltipProvider>
         </DialogSettings>
-        {!isPreview && (
+        {!isPreview && isShareCodeEnabled && (
           <button
             onClick={onCopy}
             aria-label="Fork shared code"
