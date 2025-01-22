@@ -36,7 +36,7 @@
     "clsx": "^2.1.1",
     "isbot": "^4.4.0",
     "just-debounce-it": "^3.2.0",
-    "lucide-react": "^0.473.0",
+    "lucide-react": "^0.453.0",
     "monaco-editor": "^0.52.2",
     "nuqs": "^2.3.1",
     "react": "^19.0.0",
@@ -55,7 +55,6 @@
     "@types/babel__standalone": "^7.1.9",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "@types/react-syntax-highlighter": "^15.5.13",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "autoprefixer": "^10.4.20",
@@ -72,6 +71,6 @@
     "vite-tsconfig-paths": "^4.3.2"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   }
 }
