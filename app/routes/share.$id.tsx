@@ -5,12 +5,8 @@ import { PlaygroundPreview } from "~/components/playground-preview";
 import { useShareCode } from "~/hooks/use-share-code";
 import { GitForkIcon, LinkIcon } from "lucide-react";
 import { SchemaTable } from '~/lib/types';
+import { createSSRClient } from '~/lib/supabase.server';
 import { FEATURE_FLAGS } from '~/lib/feature-flags';
-import {
-  createServerClient,
-  parseCookieHeader,
-  serializeCookieHeader
-} from "@supabase/ssr";
 
 export const meta: MetaFunction = () => {
   return [
@@ -24,23 +20,7 @@ export async function loader({ request, params }: LoaderArgs) {
   if (!FEATURE_FLAGS.SHARE_CODE) {
     return redirect("/");
   }
-  const headers = new Headers()
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return parseCookieHeader(request.headers.get("Cookie") ?? "");
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            return headers.append("Set-Cookie", serializeCookieHeader(name, value, options));
-          })
-        }
-      }
-    }
-  )
+  const supabase = createSSRClient(request)
 
   const shareCode = await supabase
     .from(SchemaTable.Shares)
@@ -59,7 +39,7 @@ export async function loader({ request, params }: LoaderArgs) {
   }
 
   return data(shareCode.data, {
-    headers
+    status: 200,
   })
 }
 

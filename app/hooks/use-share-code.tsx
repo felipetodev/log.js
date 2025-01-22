@@ -1,26 +1,25 @@
-import { useTabs } from "~/hooks/use-tab";
-import { supabase } from "~/lib/supabase-client";
-import { SchemaTable } from "~/lib/types";
+import { useEffect } from "react";
+import { useFetcher } from "@remix-run/react";
 import { toast } from 'sonner';
+import { useTabs } from "~/hooks/use-tab";
 
-export function useShareCode() {
-  const { activeTab, createNewTab } = useTabs()
+type ShareActionResponse = {
+  message: string;
+  success: boolean;
+};
+
+export function useShareCode(props?: { onSuccess?: () => void }) {
+  const action = useFetcher<ShareActionResponse>();
+  const { activeTab, createNewTab } = useTabs();
+  const { onSuccess } = props ?? {};
 
   const shareCode = async () => {
-    const { id, code } = activeTab
+    const { id, code } = activeTab;
 
-    const { status } = await supabase
-      .from(SchemaTable.Shares)
-      .upsert({ id, code })
-
-    if (status === 200 || status === 201) {
-      navigator.clipboard.writeText(
-        `${window.location.origin}/share/${id}`
-      )
-      toast.success('Share code copied to clipboard')
-    } else {
-      toast.error('Failed to share code')
-    }
+    action.submit(
+      { id, code },
+      { method: "post", action: "/share" }
+    );
   }
 
   const forkCode = async (code: string) => {
@@ -31,5 +30,18 @@ export function useShareCode() {
     window.location.pathname = '/'
   }
 
-  return { shareCode, forkCode }
+  useEffect(() => {
+    if (action.data?.success) {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/share/${activeTab.id}`
+      )
+      toast.success(action.data.message);
+      onSuccess && setTimeout(onSuccess, 1000)
+    } else {
+      toast.error(action.data?.message || "Failed to share code");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action.data]);
+
+  return { shareCode, forkCode };
 }

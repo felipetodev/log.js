@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { CopyIcon, LinkIcon, SettingsIcon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 import { DialogTrigger } from "~/ui/dialog";
 import { DialogSettings } from "~/features/dialog-settings/dialog-settings";
 import {
@@ -8,20 +7,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/ui/tooltip";
-import { useShareCode } from "~/hooks/use-share-code";
+import { ShareCodeAction } from "~/components/share-code-action";
 import { FEATURE_FLAGS } from "~/lib/feature-flags";
 
 export function Footer({ isPreview }: { isPreview?: boolean }) {
-  // ship fast, refactor later lol
-  const [copyClipboard, setCopyClipboard] = useState(false)
-  const { shareCode } = useShareCode()
-  const isShareCodeEnabled = FEATURE_FLAGS.SHARE_CODE
-
-  const onCopy = () => {
-    shareCode()
-    setCopyClipboard(true)
-    setTimeout(() => setCopyClipboard(false), 1000)
-  }
+  const isShareCodeEnabled = FEATURE_FLAGS.SHARE_CODE;
 
   return (
     <footer
@@ -52,18 +42,7 @@ export function Footer({ isPreview }: { isPreview?: boolean }) {
             </Tooltip>
           </TooltipProvider>
         </DialogSettings>
-        {!isPreview && isShareCodeEnabled && (
-          <button
-            onClick={onCopy}
-            aria-label="Fork shared code"
-            className="font-semibold text-xs h-full text-gray-300 px-1.5 animate-background-shine items-center justify-center border transition-colors border-gray-800 hover:text-gray-400 hover:border-[var(--border-color)] bg-[linear-gradient(110deg,#000,45%,#4D4B4B,55%,#000)] bg-[length:250%_100%]"
-          >
-            {copyClipboard
-              ? <>Copied to Clipboard <CopyIcon className="size-3.5 ml-1.5 inline" /></>
-              : <>Share Active Tab <LinkIcon className="size-3.5 ml-1.5 inline" /></>
-            }
-          </button>
-        )}
+        {!isPreview && isShareCodeEnabled && <ShareCodeAction />}
       </div>
       <div className="flex items-center space-x-2 mx-auto">
         <a href="https://github.com/felipetodev/log.js" rel="noopener noreferrer" target="_blank" className="inline-flex items-center space-x-1 transition-opacity hover:opacity-80" aria-label="GitHub repository">
