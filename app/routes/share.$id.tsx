@@ -7,6 +7,7 @@ import { GitForkIcon, LinkIcon } from "lucide-react";
 import { SchemaTable } from '~/lib/types';
 import { createSSRClient } from '~/lib/supabase.server';
 import { FEATURE_FLAGS } from '~/lib/feature-flags';
+import { validateParams } from '~/lib/schemas';
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,11 +17,21 @@ export const meta: MetaFunction = () => {
 
 type LoaderArgs = LoaderFunctionArgs & { params: { id: string } }
 
+const throwError = (message: string) => {
+  throw new Response(null, {
+    status: 404,
+    statusText: message,
+  })
+}
+
 export async function loader({ request, params }: LoaderArgs) {
   if (!FEATURE_FLAGS.SHARE_CODE) {
     return redirect("/");
   }
   const supabase = createSSRClient(request)
+  const { success } = validateParams(params)
+
+  if (!success) throwError("Share code not found")
 
   const shareCode = await supabase
     .from(SchemaTable.Shares)
@@ -31,11 +42,7 @@ export async function loader({ request, params }: LoaderArgs) {
   if (!shareCode.data || shareCode.status >= 400) {
     // add trasanctional logging
     console.error(shareCode.error?.message)
-
-    throw new Response(null, {
-      status: 404,
-      statusText: "Not Found",
-    })
+    throwError("Share code not found")
   }
 
   return data(shareCode.data, {

@@ -1,5 +1,6 @@
 import { data, ActionFunction } from "@remix-run/node";
 import { createSSRClient } from "~/lib/supabase.server";
+import { validateFormData } from "~/lib/schemas";
 import { SchemaTable } from "~/lib/types";
 
 export const action: ActionFunction = async ({ request }) => {
@@ -7,17 +8,21 @@ export const action: ActionFunction = async ({ request }) => {
     return data({ error: "Method not allowed" }, { status: 405 });
   }
 
-  const supabase = createSSRClient(request);
-
   const formData = await request.formData();
-  const id = formData.get("id");
-  const code = formData.get("code");
+  const { success, output } = validateFormData(Object.fromEntries(formData));
 
-  // TODO: add valibot validation
+  if (!success) {
+    return data({
+      success: false,
+      message: "Unable to share code",
+    }, { status: 400 });
+  }
+
+  const supabase = createSSRClient(request);
 
   const { status } = await supabase
     .from(SchemaTable.Shares)
-    .upsert({ id, code })
+    .upsert({ id: output.id, code: output.code })
 
   if (status === 200 || status === 201) {
     return data({
