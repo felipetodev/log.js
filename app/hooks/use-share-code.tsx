@@ -18,7 +18,7 @@ export function useShareCode(props?: { onSuccess?: () => void }) {
 
     action.submit(
       { id, code },
-      { method: "post", action: "/share" }
+      { method: "POST", action: "/api/share" }
     );
   }
 
