@@ -2,6 +2,7 @@ import { data, ActionFunction } from "@remix-run/node";
 import { createSSRClient } from "~/lib/supabase.server";
 import { validateFormData } from "~/lib/schemas";
 import { SchemaTable } from "~/lib/types";
+import { rateLimit } from "~/lib/limiter";
 
 export const action: ActionFunction = async ({ request }) => {
   if (request.method !== "POST") {
@@ -18,6 +19,16 @@ export const action: ActionFunction = async ({ request }) => {
     }, { status: 400 });
   }
 
+  const headers = new Headers(request.headers);
+  const { success: rateLimitSuccess } = await rateLimit(headers, { limit: 10 });
+
+  if (!rateLimitSuccess) {
+    return data({
+      success: false,
+      message: "Rate limit exceeded",
+    }, { status: 429 });
+  }
+
   const supabase = createSSRClient(request);
 
   const { status } = await supabase
@@ -28,11 +39,11 @@ export const action: ActionFunction = async ({ request }) => {
     return data({
       success: true,
       message: "Share code copied to clipboard",
-    }, { status });
+    }, { status, headers });
   } else {
     return data({
       success: false,
       message: "Failed to share code",
-    }, { status });
+    }, { status, headers });
   }
 };
