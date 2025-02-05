@@ -63,11 +63,11 @@ export const SETTINGS_CONTENT: Record<SettingsTab, SettingsTabData> = {
       {
         name: "Font",
         type: "select",
-        value: "monospace",
+        value: "Cascadia Code PL",
         monacoId: "fontFamily",
         values: [
-          { value: "monospace", name: "Monospace" },
           { value: "Cascadia Code PL", name: "Cascadia Code-PL" },
+          { value: "monospace", name: "Monospace" },
           { value: "Monaco", name: "Monaco" },
           { value: "Courier New", name: "Courier New" },
           { value: "sans-serif", name: "Sans-serif" },

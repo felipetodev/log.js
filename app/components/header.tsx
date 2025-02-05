@@ -66,7 +66,7 @@ export function Header() {
           <TooltipTrigger asChild>
             <button
               disabled={isLoading}
-              onClick={createNewTab}
+              onClick={() => createNewTab()}
               aria-label="Create new tab"
               className="px-1 text-white hover:bg-[var(--border-color)] rounded-lg mt-1 mb-0.5 ml-0.5 border border-transparent hover:border-neutral-700 transition-colors"
             >

@@ -4,6 +4,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import { Analytics } from '@vercel/analytics/react';
@@ -12,6 +13,8 @@ import { useSWEffect } from '@remix-pwa/sw'
 
 import "./tailwind.css";
 import { HotKeys } from "~/components/hot-keys";
+import { Error } from "./components/404";
+import { Toaster } from "sonner";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -26,9 +29,7 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
-  useSWEffect()
-  
+function Document({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -69,13 +70,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="overflow-hidden bg-[#282A36]">
+      <body className="overflow-hidden bg-[#282A36] h-screen">
         {children}
-        <ScrollRestoration />
+        <Toaster position="bottom-right" />
         <Scripts />
+        <ScrollRestoration />
         <Analytics />
       </body>
     </html>
+  )
+}
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  useSWEffect()
+
+  return (
+    <Document>
+      {children}
+    </Document>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+  return (
+    <>
+      <title>404 | log.js 🧪</title>
+      <Error />
+    </>
   );
 }
 

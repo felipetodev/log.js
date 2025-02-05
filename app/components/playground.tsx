@@ -11,7 +11,8 @@ import {
 export function Playground() {
   const {
     inputEditorContainer,
-    outputEditorContainer
+    outputEditorContainer,
+    isLoading
   } = useMonacoEditor()
 
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
@@ -23,7 +24,7 @@ export function Playground() {
             <Panel defaultSize={50} minSize={20} className="relative">
               <div ref={inputEditorContainer} className="size-full" />
               <LanguageSwitch />
-              <LoopLoader />
+              <LoopLoader isLoading={isLoading} />
             </Panel>
             <PanelResizeHandle className="w-[1.5px] bg-neutral-700/80 data-[resize-handle-state=drag]:bg-neutral-600 transition-colors" />
             <Panel defaultSize={50} minSize={20}>
