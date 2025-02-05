@@ -15,7 +15,14 @@ interface TabsState {
 const DEFAULT_TAB: Tab = {
   id: crypto.randomUUID(),
   name: 'Welcome 🎉',
-  code: 'function sum(a: number, b: number) {\n  return a + b \n}\n\nconsole.log(sum(2, 2))\n',
+  code: `\
+/**
+ * Welcome to Log.js 🧪
+ * Now you can share your code and fork others' code!
+ * Click on the "Share" button below to get started! 🚀
+ */
+
+function sum(a: number, b: number) {\n  return a + b\n}\n\nconsole.log(sum(2, 2))\n`,
   createdAt: new Date(),
 }
 
