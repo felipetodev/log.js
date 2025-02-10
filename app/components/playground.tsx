@@ -1,7 +1,8 @@
 import { useMonacoEditor } from "~/hooks/use-monaco-editor";
 import { useTabsStore } from "~/store/tabs";
-import { LanguageSwitch } from "./language-switch";
-import { LoopLoader } from "./loop-loader";
+import { LanguageSwitch } from "~/components/language-switch";
+import { LoopLoader } from "~/components/loop-loader";
+import { useMediaQuery } from "~/hooks/use-media-query";
 import {
   Panel,
   PanelGroup,
@@ -13,14 +14,15 @@ export function Playground() {
     inputEditorContainer,
     outputEditorContainer,
     isLoading
-  } = useMonacoEditor()
+  } = useMonacoEditor();
+  const { isMobile } = useMediaQuery();
 
   const hasHydratedStorage = useTabsStore(state => state._hasHydrated);
   return (
     <>
       {hasHydratedStorage ? (
         <div className="h-[calc(100%-56px)] bg-[#282A36]">
-          <PanelGroup autoSaveId="editor" direction="horizontal">
+          <PanelGroup autoSaveId="editor" direction={isMobile ? "vertical" : "horizontal"}>
             <Panel defaultSize={50} minSize={20} className="relative">
               <div ref={inputEditorContainer} className="size-full" />
               <LanguageSwitch />
