@@ -44,7 +44,7 @@ export function Footer({ isPreview }: { isPreview?: boolean }) {
         </DialogSettings>
         {!isPreview && isShareCodeEnabled && <ShareCodeAction />}
       </div>
-      <div className="flex items-center space-x-2 mx-auto">
+      <div className="flex items-center space-x-2 ml-auto md:mx-auto h-full px-1.5">
         <a href="https://github.com/felipetodev/log.js" rel="noopener noreferrer" target="_blank" className="inline-flex items-center space-x-1 transition-opacity hover:opacity-80" aria-label="GitHub repository">
           <h1>
             log.js <span className="text-xs text-blue-400">open-source</span>

@@ -8,6 +8,7 @@ import {
   PanelGroup,
   PanelResizeHandle
 } from "react-resizable-panels";
+import { cn } from "~/lib/utils";
 
 export function Playground() {
   const {
@@ -28,7 +29,10 @@ export function Playground() {
               <LanguageSwitch />
               <LoopLoader isLoading={isLoading} />
             </Panel>
-            <PanelResizeHandle className="w-[1.5px] bg-neutral-700/80 data-[resize-handle-state=drag]:bg-neutral-600 transition-colors" />
+            <PanelResizeHandle className={cn("bg-neutral-700/80 data-[resize-handle-state=drag]:bg-neutral-600 transition-colors", {
+              "h-1": isMobile,
+              "w-[1.5px]": !isMobile
+            })} />
             <Panel defaultSize={50} minSize={20}>
               <div ref={outputEditorContainer} className="size-full" />
             </Panel>
