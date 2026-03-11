@@ -18,8 +18,8 @@ const DEFAULT_TAB: Tab = {
   code: `\
 /**
  * Welcome to Log.js 🧪
- * Now you can share your code and fork others' code!
- * Click on the "Share" button below to get started! 🚀
+ * This is your first tab, feel free to play around with it!
+ * Happy coding! 🚀
  */
 
 function sum(a: number, b: number) {\n  return a + b\n}\n\nconsole.log(sum(2, 2))\n`,

@@ -7,12 +7,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/ui/tooltip";
-import { ShareCodeAction } from "~/components/share-code-action";
-import { FEATURE_FLAGS } from "~/lib/feature-flags";
 
-export function Footer({ isPreview }: { isPreview?: boolean }) {
-  const isShareCodeEnabled = FEATURE_FLAGS.SHARE_CODE;
-
+export function Footer() {
   return (
     <footer
       style={
@@ -42,7 +38,6 @@ export function Footer({ isPreview }: { isPreview?: boolean }) {
             </Tooltip>
           </TooltipProvider>
         </DialogSettings>
-        {!isPreview && isShareCodeEnabled && <ShareCodeAction />}
       </div>
       <div className="flex items-center space-x-2 ml-auto md:mx-auto h-full px-1.5">
         <a href="https://github.com/felipetodev/log.js" rel="noopener noreferrer" target="_blank" className="inline-flex items-center space-x-1 transition-opacity hover:opacity-80" aria-label="GitHub repository">

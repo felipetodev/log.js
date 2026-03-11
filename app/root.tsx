@@ -14,7 +14,6 @@ import { useSWEffect } from '@remix-pwa/sw'
 import "./tailwind.css";
 import { HotKeys } from "~/components/hot-keys";
 import { Error } from "./components/404";
-import { Toaster } from "sonner";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -72,7 +71,6 @@ function Document({ children }: { children: React.ReactNode }) {
       </head>
       <body className="overflow-hidden bg-[#282A36] h-screen">
         {children}
-        <Toaster position="bottom-right" />
         <Scripts />
         <ScrollRestoration />
         <Analytics />
