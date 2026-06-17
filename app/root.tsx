@@ -7,7 +7,6 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-import { Analytics } from '@vercel/analytics/react';
 import { NuqsAdapter } from "nuqs/adapters/remix";
 import { useSWEffect } from '@remix-pwa/sw'
 
@@ -73,7 +72,6 @@ function Document({ children }: { children: React.ReactNode }) {
         {children}
         <Scripts />
         <ScrollRestoration />
-        <Analytics />
       </body>
     </html>
   )
